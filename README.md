@@ -36,6 +36,10 @@ the picks highlighted, and the calibrated thresholds.
 > Hosted copy: [claude.ai/code/artifact/500b6d04…](https://claude.ai/code/artifact/500b6d04-b4fb-4556-99b2-732edbdbcf2c)
 > (private to the author — the standalone file above is the shareable version).
 
+**Prefer plain text?** The same results are written up in
+[`docs/artifacts/phase1_review.md`](docs/artifacts/phase1_review.md) — readable and
+diffable on GitHub, no browser needed.
+
 There are two HTML files in `artifacts/`:
 [`phase1_review_standalone.html`](artifacts/phase1_review_standalone.html) is the complete,
 double-clickable document; `phase1_review.html` is the same content without the
