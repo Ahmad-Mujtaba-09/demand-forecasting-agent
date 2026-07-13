@@ -1,0 +1,18 @@
+# Demand-Forecasting Agent — Python dependencies
+# Tested on Python 3.12. Pinned to the versions this repo was developed against;
+# relax as needed.
+
+# --- Phase 1 core (EDA, signals, dataset selection, thresholds) ---
+pandas>=3.0
+numpy>=2.5
+pyarrow>=17          # parquet I/O for the signal table
+
+# --- Phase 2-3 (baselines + LightGBM bake-off) ---
+lightgbm>=4.6
+scikit-learn>=1.5    # L2 baseline, utilities
+
+# --- Phase 4 (agent wrapper) ---
+# agno                # uncomment when building the agent layer
+
+# --- Dev ---
+pytest>=8

@@ -1,0 +1,449 @@
+<style>
+  :root{
+    --bg:#f6f7f8; --surface:#ffffff; --surface-2:#fcfcfb;
+    --ink:#171a1f; --secondary:#555c67; --muted:#868d98;
+    --border:#e6e8ec; --grid:#eef0f2; --grid-strong:#dde0e5;
+    --accent:#0e7c86; --accent-ink:#0a5b62; --accent-wash:#e6f2f2;
+    --s-smooth:#2a78d6; --s-erratic:#eda100; --s-interm:#1baf7a; --s-lumpy:#e34948;
+    --seq:#256abf; --seq-fill:#9ec5f4;
+    --pA:#2a78d6; --pB:#1baf7a; --pC:#e34948; --pD:#7c6cf0;
+    --shadow:0 1px 2px rgba(20,22,28,.04),0 2px 8px rgba(20,22,28,.05);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#111317; --surface:#1a1c21; --surface-2:#191b1f;
+      --ink:#f2f3f5; --secondary:#c1c5cc; --muted:#888f99;
+      --border:#2a2d34; --grid:#24272d; --grid-strong:#31353d;
+      --accent:#42b7c0; --accent-ink:#7fd3d9; --accent-wash:#12292b;
+      --s-smooth:#3987e5; --s-erratic:#c98500; --s-interm:#199e70; --s-lumpy:#e66767;
+      --seq:#3987e5; --seq-fill:#1c4a7a;
+      --pA:#3987e5; --pB:#199e70; --pC:#e66767; --pD:#9085e9;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 2px 10px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f7f8; --surface:#ffffff; --surface-2:#fcfcfb;
+    --ink:#171a1f; --secondary:#555c67; --muted:#868d98;
+    --border:#e6e8ec; --grid:#eef0f2; --grid-strong:#dde0e5;
+    --accent:#0e7c86; --accent-ink:#0a5b62; --accent-wash:#e6f2f2;
+    --s-smooth:#2a78d6; --s-erratic:#eda100; --s-interm:#1baf7a; --s-lumpy:#e34948;
+    --seq:#256abf; --seq-fill:#9ec5f4;
+    --pA:#2a78d6; --pB:#1baf7a; --pC:#e34948; --pD:#7c6cf0;
+  }
+  :root[data-theme="dark"]{
+    --bg:#111317; --surface:#1a1c21; --surface-2:#191b1f;
+    --ink:#f2f3f5; --secondary:#c1c5cc; --muted:#888f99;
+    --border:#2a2d34; --grid:#24272d; --grid-strong:#31353d;
+    --accent:#42b7c0; --accent-ink:#7fd3d9; --accent-wash:#12292b;
+    --s-smooth:#3987e5; --s-erratic:#c98500; --s-interm:#199e70; --s-lumpy:#e66767;
+    --seq:#3987e5; --seq-fill:#1c4a7a;
+    --pA:#3987e5; --pB:#199e70; --pC:#e66767; --pD:#9085e9;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased;margin:0}
+  .wrap{max-width:1060px;margin:0 auto;padding:56px 28px 96px}
+  .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.11em;
+    font-weight:650;color:var(--accent-ink)}
+  h1{font-size:2.05rem;font-weight:660;letter-spacing:-.02em;margin:.5rem 0 .3rem;
+    text-wrap:balance;line-height:1.1}
+  .lede{font-size:1.05rem;color:var(--secondary);max-width:66ch;margin:.2rem 0 0}
+  h2{font-size:1.28rem;font-weight:640;letter-spacing:-.01em;margin:0 0 .2rem}
+  .num{font-variant-numeric:tabular-nums;font-family:var(--mono)}
+
+  .metarow{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .chip{font-family:var(--mono);font-size:.78rem;color:var(--secondary);
+    background:var(--surface);border:1px solid var(--border);border-radius:7px;
+    padding:6px 11px}
+  .chip b{color:var(--ink);font-weight:600}
+
+  section{margin-top:52px}
+  .sec-head{margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px}
+
+  .findings{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .finding{background:var(--surface);border:1px solid var(--border);border-radius:11px;
+    padding:16px 17px;box-shadow:var(--shadow)}
+  .finding .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--muted);font-weight:640;margin-bottom:7px}
+  .finding .v{font-size:.92rem;color:var(--secondary)}
+  .finding .v b{color:var(--ink);font-weight:600}
+  .finding.warn{border-left:3px solid var(--s-erratic)}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+    padding:20px 20px 14px;box-shadow:var(--shadow);margin-bottom:22px}
+  .panel h3{font-size:.98rem;font-weight:630;margin:0 0 2px}
+  .panel .cap{font-size:.88rem;color:var(--secondary);margin:0 0 14px;max-width:74ch}
+  .panel .cap .feeds{color:var(--accent-ink);font-weight:600}
+  figure{margin:0}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .axis text{fill:var(--muted);font-size:11px;font-family:var(--mono)}
+  .axis line,.axis path{stroke:var(--grid-strong)}
+  .gridline{stroke:var(--grid)}
+  .marker{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 3}
+  .marker-lbl{fill:var(--accent-ink);font-size:10.5px;font-family:var(--mono);font-weight:600}
+  .qline{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;opacity:.7}
+
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:2px 0 6px;font-size:.8rem;
+    color:var(--secondary);font-family:var(--mono)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+  .picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .pick{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:16px 17px;box-shadow:var(--shadow);border-top:3px solid var(--pc)}
+  .pick .tag{display:inline-block;font-family:var(--mono);font-size:.72rem;font-weight:700;
+    letter-spacing:.03em;color:#fff;background:var(--pc);border-radius:5px;padding:2px 7px}
+  .pick .cell{font-family:var(--mono);font-size:1.02rem;font-weight:600;margin:9px 0 2px}
+  .pick .branch{font-size:.82rem;color:var(--secondary);margin-bottom:11px}
+  .pick dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:.82rem}
+  .pick dt{color:var(--muted)}
+  .pick dd{margin:0;text-align:right;font-family:var(--mono);color:var(--ink)}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:11px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:.82rem}
+  thead th{position:sticky;top:0;background:var(--surface);text-align:right;
+    font-family:var(--mono);font-weight:600;color:var(--muted);font-size:.74rem;
+    padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+  thead th:first-child,thead th:nth-child(2){text-align:left}
+  tbody td{padding:7px 12px;text-align:right;font-family:var(--mono);
+    border-bottom:1px solid var(--grid);white-space:nowrap;font-variant-numeric:tabular-nums}
+  tbody td:first-child,tbody td:nth-child(2){text-align:left}
+  tbody tr.pick-row{background:var(--accent-wash)}
+  tbody tr.pick-row td:first-child{box-shadow:inset 3px 0 0 var(--pc)}
+  .rowtag{font-weight:700;color:var(--pc)}
+
+  .note{font-size:.86rem;color:var(--secondary);background:var(--surface);
+    border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:9px;
+    padding:14px 16px;max-width:80ch}
+  .decisions{display:grid;gap:12px}
+  .decision{background:var(--surface);border:1px solid var(--border);border-radius:11px;
+    padding:15px 17px;box-shadow:var(--shadow)}
+  .decision .q{font-weight:600;font-size:.95rem;margin-bottom:4px}
+  .decision .a{font-size:.88rem;color:var(--secondary)}
+
+  #tt{position:fixed;pointer-events:none;opacity:0;transition:opacity .08s;
+    background:var(--ink);color:var(--bg);font-family:var(--mono);font-size:.75rem;
+    padding:6px 9px;border-radius:6px;z-index:50;white-space:nowrap;
+    box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);
+    font-size:.8rem;color:var(--muted);font-family:var(--mono)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Demand-Forecasting Agent · Phase 1 review</div>
+    <h1>EDA signals &amp; dataset selection</h1>
+    <p class="lede">Three branch signals computed over every store-item series, and the
+      four sub-datasets chosen from the pattern extremes. Every chart below feeds one
+      downstream decision — a branch threshold or a dataset pick. Thresholds are
+      <b>fit to the dataset's own distribution</b> (format-general, threshold-adaptive);
+      <b>validated on M5</b>, the reference dataset.</p>
+    <div class="metarow" id="meta"></div>
+  </header>
+
+  <section>
+    <div class="sec-head"><h2>What the signals say</h2></div>
+    <div class="findings" id="findings"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Signal distributions</h2>
+      <p class="lede" style="font-size:.92rem;margin-top:6px">Calibration views (1–3) are
+        drawn over the <b>non-held-out pool</b> — the thresholds we read off never see D.
+        The intermittency map colours every point by its Syntetos–Boylan class.</p></div>
+
+    <div class="panel">
+      <h3>1 · Zero-share distribution</h3>
+      <p class="cap">How zero-heavy each series is, over its active window. <span class="feeds">Feeds
+        the B1 (Tweedie) cut</span>: at or above the dashed line, zeros dominate enough that a
+        Tweedie objective is warranted over squared-error regression.</p>
+      <figure id="c-zero"></figure>
+    </div>
+
+    <div class="panel">
+      <h3>2 · Intermittency map — ADI vs CV²</h3>
+      <p class="cap">Average demand interval (how often it sells) against squared variability of
+        non-zero sizes. <span class="feeds">Feeds the B1-vs-B2 split</span>: the vertical sparse
+        cut separates modelable intermittent series (Tweedie) from too-sparse ones that fall back
+        to a baseline. Quadrant lines are the standard SB cutoffs (1.32, 0.49).</p>
+      <div class="legend" id="leg-scatter"></div>
+      <figure id="c-scatter"></figure>
+    </div>
+
+    <div class="panel">
+      <h3>3 · Weekly seasonality — day-of-week variance explained (η²)</h3>
+      <p class="cap">Fraction of each series' demand variance explained by which day of the week it is
+        (deterministic, spike-honest — replaces the config-fragile STL strength). <span class="feeds">Feeds
+        the B3 cut</span> — and the spread is stark: the median item's day-of-week explains ~1% of its
+        variance, so the seasonal-feature branch fires for only a small minority. For most series,
+        calendar features carry seasonality instead.</p>
+      <figure id="c-dow"></figure>
+    </div>
+
+    <div class="panel">
+      <h3>4 · Spike ratio</h3>
+      <p class="cap">Fraction of active days that are demand spikes (MAD-based, promo/event driven).
+        <span class="feeds">Feeds the critic's plausible-magnitude bound</span> — spikes are real
+        demand, and their tail sets what forecast magnitudes count as sane.</p>
+      <figure id="c-spike"></figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>The four sub-datasets</h2>
+      <p class="lede" style="font-size:.92rem;margin-top:6px">Each pick sits at a pattern extreme
+        and stresses one branch. D is deliberately <b>mixed</b> — it tests branch selection, and is
+        frozen and untouched until Phase 5.</p></div>
+    <div class="picks" id="picks"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Candidate groups — all 70 store×dept cells</h2>
+      <p class="lede" style="font-size:.92rem;margin-top:6px">Sorted by median zero-share. The four
+        selected groups are highlighted. This is the selection view, so it shows all candidates
+        including D.</p></div>
+    <div class="tablewrap"><table id="gtable"></table></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Calibrated thresholds &amp; branch coverage</h2></div>
+    <div class="findings" id="thr"></div>
+    <p class="note" style="margin-top:16px" id="thrnote"></p>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Decisions for your review</h2></div>
+    <div class="decisions">
+      <div class="decision"><div class="q">1 · Confirm the B pick — CA_2 × HOUSEHOLD_2 for Tweedie.</div>
+        <div class="a">The rule chose the most intermittent-class-dominant modelable group (93% intermittent),
+          which is a purer Tweedie showcase than a HOBBIES_1 cell. Accept, or prefer a HOBBIES cell?</div></div>
+      <div class="decision"><div class="q">2 · The seasonal branch (B3) barely fires.</div>
+        <div class="a">Day-of-week explains only ~1% of the median item's demand variance (P90 η² ≈ 0.042), so
+          B3 tags ~10% of series. Options for Phase 3: keep the low-value seasonal toggle, drop it and let
+          calendar features (wday/events/SNAP) carry seasonality, or assess seasonality on aggregated series
+          where the weekly signal is stronger.</div></div>
+      <div class="decision"><div class="q">3 · Threshold values (all data-relative to this dataset).</div>
+        <div class="a">Sparse cut ADI ≥ <span class="num" id="d-adi"></span> (P90), Tweedie cut zero-share ≥
+          <span class="num" id="d-zero"></span> (P60 of non-sparse — genuinely high), seasonal cut η² ≥ <span class="num" id="d-dow"></span>
+          (P90). Fit on the non-D pool; a different dataset re-fits them. Syntetos–Boylan cutoffs stay absolute.
+          Adjust any before Phase 2?</div></div>
+    </div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<div id="tt"></div>
+
+<script type="application/json" id="data">/*CHARTDATA*/</script>
+<script>
+(function(){
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const NS = 'http://www.w3.org/2000/svg';
+  const tt = document.getElementById('tt');
+  const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const fmtInt = n => n.toLocaleString('en-US');
+  function el(tag, attrs){const e=document.createElementNS(NS,tag);
+    for(const k in attrs) e.setAttribute(k,attrs[k]); return e;}
+  function showTT(html,ev){tt.innerHTML=html;tt.style.opacity=1;
+    tt.style.left=(ev.clientX+12)+'px';tt.style.top=(ev.clientY+12)+'px';}
+  function hideTT(){tt.style.opacity=0;}
+
+  // ---- meta chips ----
+  const c=D.counts;
+  document.getElementById('meta').innerHTML=[
+    ['series total',fmtInt(c.total)],['non-held-out pool',fmtInt(c.nond)],
+    ['held-out D',fmtInt(c.d)],['store×dept groups',c.groups],
+    ['history','d_1–1913 · 2011-01-29 → 2016-04-24']
+  ].map(([k,v])=>`<span class="chip">${k} <b>${v}</b></span>`).join('');
+
+  // ---- findings ----
+  const th=D.thresholds, bf=D.branch_fracs;
+  const pf=v=>Math.round(v*100)+'%';
+  document.getElementById('findings').innerHTML=[
+    ['Zero-heavy, as expected','k',`Median series is <b>63% zeros</b>; 73% classify as intermittent, 18% lumpy. This is why squared-error regression is the wrong default — <b>Tweedie claims ${pf(bf.B1_tweedie)}</b> of series.`],
+    ['Sparsity is about timing, not count','k',`Even the sparsest decile has ~130 non-zero days. What defeats a boosted model is the demand <b>interval</b> (ADI), so the B2 fallback keys on ADI — it claims <b>${pf(bf.B2_baseline)}</b>.`],
+    ['Weekly seasonality is weak at item level','warn',`Day-of-week explains only ~1% of the median item's demand variance (η² median 0.012). The seasonal branch fires for just <b>${pf(D.seasonal_frac)}</b> of series — a real finding that reshapes B3.`],
+  ].map(([k,cls,v])=>`<div class="finding ${cls==='warn'?'warn':''}"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+
+  // ---- generic histogram ----
+  function histChart(id,h,opts){
+    const W=920,H=260,m={t:14,r:16,b:40,l:46};
+    const iw=W-m.l-m.r, ih=H-m.t-m.b;
+    const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+    const n=h.counts.length, maxC=Math.max(...h.counts);
+    const x=i=>m.l+iw*i/n, bw=iw/n;
+    const y=v=>m.t+ih*(1-v/maxC);
+    // y gridlines
+    const g=el('g',{class:'axis'});
+    for(let t=0;t<=4;t++){const yy=m.t+ih*t/4, val=Math.round(maxC*(1-t/4));
+      g.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:yy,y2:yy,class:'gridline'}));
+      const tx=el('text',{x:m.l-8,y:yy+3,'text-anchor':'end'});tx.textContent=fmtInt(val);g.appendChild(tx);}
+    svg.appendChild(g);
+    // bars
+    const fill=cssv(opts.fill), stroke=cssv(opts.stroke);
+    for(let i=0;i<n;i++){
+      const bh=ih*h.counts[i]/maxC;
+      const r=el('rect',{x:x(i)+1.5,y:y(h.counts[i]),width:Math.max(bw-3,1),height:Math.max(bh,0),
+        rx:3,fill:fill,stroke:stroke,'stroke-width':1});
+      const lo=h.edges[i].toFixed(opts.dec), hi=h.edges[i+1].toFixed(opts.dec);
+      r.addEventListener('mousemove',e=>showTT(`${opts.xlabel} ${lo}–${hi}<br>${fmtInt(h.counts[i])} series`,e));
+      r.addEventListener('mouseleave',hideTT);
+      svg.appendChild(r);
+    }
+    // x ticks (every k)
+    const step=opts.tickStep||2;
+    const ax=el('g',{class:'axis'});
+    ax.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih}));
+    for(let i=0;i<=n;i+=step){const tx=el('text',{x:x(i),y:m.t+ih+16,'text-anchor':'middle'});
+      tx.textContent=h.edges[i].toFixed(opts.dec);ax.appendChild(tx);}
+    svg.appendChild(ax);
+    // axis labels
+    const xl=el('text',{x:m.l+iw/2,y:H-4,'text-anchor':'middle',fill:'var(--muted)'});
+    xl.setAttribute('font-size','11');xl.setAttribute('font-family','var(--mono)');
+    xl.textContent=opts.xlabel;svg.appendChild(xl);
+    // marker line
+    if(opts.mark!=null){
+      const frac=(opts.mark-h.edges[0])/(h.edges[n]-h.edges[0]);
+      const mx=m.l+iw*frac;
+      svg.appendChild(el('line',{x1:mx,x2:mx,y1:m.t-2,y2:m.t+ih,class:'marker'}));
+      const ml=el('text',{x:mx+5,y:m.t+9,class:'marker-lbl'});ml.textContent=opts.markLabel;svg.appendChild(ml);
+    }
+    document.getElementById(id).appendChild(svg);
+  }
+
+  function drawHists(){
+    histChart('c-zero',D.zero_hist,{fill:'--seq-fill',stroke:'--seq',dec:2,xlabel:'zero-share',
+      mark:th.zero_share_tweedie_cut,markLabel:'B1 cut '+th.zero_share_tweedie_cut,tickStep:2});
+    histChart('c-dow',D.dow_hist,{fill:'--seq-fill',stroke:'--seq',dec:3,xlabel:'day-of-week variance explained (η²)',
+      mark:th.dow_season_cut,markLabel:'B3 cut '+th.dow_season_cut,tickStep:2});
+    histChart('c-spike',D.spike_hist,{fill:'--seq-fill',stroke:'--seq',dec:3,xlabel:'spike ratio',tickStep:2});
+  }
+
+  // ---- scatter ----
+  function scatter(){
+    const cmap={smooth:'--s-smooth',erratic:'--s-erratic',intermittent:'--s-interm',lumpy:'--s-lumpy'};
+    // legend
+    document.getElementById('leg-scatter').innerHTML=D.sb_order.map(c=>
+      `<span><i style="background:${cssv(cmap[c])}"></i>${c}</span>`).join('')+
+      `<span style="color:var(--muted)">· ADI capped at 20 for display</span>`;
+    const W=920,H=340,m={t:14,r:16,b:42,l:48};
+    const iw=W-m.l-m.r, ih=H-m.t-m.b;
+    const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+    const xmax=20,ymax=2;
+    const x=v=>m.l+iw*v/xmax, y=v=>m.t+ih*(1-v/ymax);
+    const g=el('g',{class:'axis'});
+    for(let t=0;t<=4;t++){const yy=m.t+ih*t/4;
+      g.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:yy,y2:yy,class:'gridline'}));
+      const tx=el('text',{x:m.l-8,y:yy+3,'text-anchor':'end'});tx.textContent=(ymax*(1-t/4)).toFixed(1);g.appendChild(tx);}
+    for(let vx=0;vx<=xmax;vx+=4){const xx=x(vx);
+      const tx=el('text',{x:xx,y:m.t+ih+16,'text-anchor':'middle'});tx.textContent=vx;g.appendChild(tx);}
+    g.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih}));
+    svg.appendChild(g);
+    // quadrant + sparse lines
+    svg.appendChild(el('line',{x1:x(1.32),x2:x(1.32),y1:m.t,y2:m.t+ih,class:'qline'}));
+    svg.appendChild(el('line',{x1:m.l,x2:m.l+iw,y1:y(0.49),y2:y(0.49),class:'qline'}));
+    const sx=x(th.adi_sparse_cut);
+    svg.appendChild(el('line',{x1:sx,x2:sx,y1:m.t-2,y2:m.t+ih,class:'marker'}));
+    const ml=el('text',{x:sx+5,y:m.t+10,class:'marker-lbl'});ml.textContent='B2 sparse cut '+th.adi_sparse_cut;svg.appendChild(ml);
+    // points
+    for(const p of D.scatter){
+      const dot=el('circle',{cx:x(p.adi),cy:y(p.cv2),r:2.6,fill:cssv(cmap[p.c]),
+        'fill-opacity':.62,stroke:cssv('--surface'),'stroke-width':.4});
+      svg.appendChild(dot);
+    }
+    // axis labels
+    const xl=el('text',{x:m.l+iw/2,y:H-4,'text-anchor':'middle',fill:'var(--muted)'});
+    xl.setAttribute('font-size','11');xl.setAttribute('font-family','var(--mono)');
+    xl.textContent='ADI (avg demand interval, days)';svg.appendChild(xl);
+    const yl=el('text',{x:14,y:m.t+ih/2,'text-anchor':'middle',fill:'var(--muted)',
+      transform:`rotate(-90 14 ${m.t+ih/2})`});
+    yl.setAttribute('font-size','11');yl.setAttribute('font-family','var(--mono)');
+    yl.textContent='CV² of non-zero sizes';svg.appendChild(yl);
+    document.getElementById('c-scatter').appendChild(svg);
+  }
+
+  // ---- picks ----
+  function picks(){
+    const meta={A_dense:['A','--pA'],B_intermittent:['B','--pB'],C_sparse:['C','--pC'],D_heldout:['D','--pD']};
+    const order=['A_dense','B_intermittent','C_sparse','D_heldout'];
+    const labels={A_dense:'Dense / fast-moving',B_intermittent:'Intermittent / zero-heavy',
+      C_sparse:'Slow / sparse',D_heldout:'Held-out (mixed)'};
+    document.getElementById('picks').innerHTML=order.map(k=>{
+      const p=D.picks[k],[tag,cv]=meta[k],pr=p.prof;
+      return `<div class="pick" style="--pc:var(${cv})">
+        <span class="tag">${tag} · ${labels[k]}</span>
+        <div class="cell">${p.store} × ${p.dept}</div>
+        <div class="branch">${p.branch} · n=${p.n_full}, sampled ${p.n_sampled}</div>
+        <dl>
+          <dt>zero-share</dt><dd>${pr.med_zero.toFixed(3)}</dd>
+          <dt>ADI</dt><dd>${D.groups.find(g=>g.store===p.store&&g.dept===p.dept).adi.toFixed(2)}</dd>
+          <dt>mean non-zero</dt><dd>${pr.med_nonzero.toFixed(2)}</dd>
+          <dt>DoW η²</dt><dd>${pr.med_dow.toFixed(3)}</dd>
+        </dl></div>`;
+    }).join('');
+  }
+
+  // ---- group table ----
+  function table(){
+    const meta={A_dense:'A',B_intermittent:'B',C_sparse:'C',D_heldout:'D'};
+    const cvar={A_dense:'--pA',B_intermittent:'--pB',C_sparse:'--pC',D_heldout:'--pD'};
+    const cols=['store','dept','n','zero','adi','nz','dow','interm','lumpy','smooth'];
+    const heads=['store','dept','n','zero','ADI','non-zero','DoW η²','%interm','%lumpy','%smooth',''];
+    let h='<thead><tr>'+heads.map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>';
+    for(const r of D.groups){
+      const pk=r.pick, on=pk?` class="pick-row" style="--pc:var(${cvar[pk]})"`:'';
+      h+=`<tr${on}>`+cols.map(c=>`<td>${typeof r[c]==='number'?(Number.isInteger(r[c])?r[c]:r[c].toFixed(c==='zero'||c==='dow'?3:2)):r[c]}</td>`).join('')
+        +`<td><span class="rowtag">${pk?meta[pk]:''}</span></td></tr>`;
+    }
+    document.getElementById('gtable').innerHTML=h+'</tbody>';
+  }
+
+  // ---- thresholds panel ----
+  function thresholds(){
+    const bf=D.branch_fracs;
+    document.getElementById('thr').innerHTML=[
+      ['B2 · sparse cut',`ADI ≥ <b>${th.adi_sparse_cut}</b> → baseline (Croston/MA). Claims ${pf(bf.B2_baseline)} of series.`],
+      ['B1 · Tweedie cut',`zero-share ≥ <b>${th.zero_share_tweedie_cut}</b> (P60 of the <b>non-sparse</b> subset — genuinely high, not the median; and modelable) → Tweedie. Claims ${pf(bf.B1_tweedie)}.`],
+      ['Standard · objective',`modelable but below the B1 cut → <b>standard objective</b> (L2/Poisson per the bake-off). A documented branch, not a gap. Claims ${pf(bf.standard)}.`],
+      ['B3 · seasonal cut',`day-of-week η² ≥ <b>${th.dow_season_cut}</b> → add seasonal features. Fires for ${pf(D.seasonal_frac)}.`],
+      ['Critic bounds',`forecast ≥ <b>${th.min_forecast}</b>; ≤ <b>${th.max_median_ratio}×</b> the series median non-zero.`],
+    ].map(([k,v])=>`<div class="finding"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+    document.getElementById('thrnote').innerHTML=
+      `<b>Data-relative & held-out-safe.</b> Every cut above is <b>fit to this dataset's own distribution</b>
+       (percentiles noted) on the ${fmtInt(D.counts.nond)}-series non-D pool — a different M5-format dataset
+       re-fits them. The Syntetos–Boylan class cutoffs (ADI 1.32, CV² 0.49) are the exception: published
+       constants, used as-is. D (${fmtInt(D.counts.d)} series) informed no distribution and no boundary — genuinely
+       unseen into Phase 5, thresholds included.`;
+    document.getElementById('d-adi').textContent=th.adi_sparse_cut;
+    document.getElementById('d-zero').textContent=th.zero_share_tweedie_cut;
+    document.getElementById('d-dow').textContent=th.dow_season_cut;
+  }
+
+  function foot(){document.getElementById('foot').innerHTML=
+    `Phase 1 · signals: zero-share · ADI/CV² (Syntetos–Boylan 2005) · day-of-week η² · MAD spikes ·
+     computed on active windows (post-introduction) · thresholds data-relative · 48 tests passing.`;}
+
+  function renderAll(){
+    ['c-zero','c-dow','c-spike','c-scatter'].forEach(id=>document.getElementById(id).innerHTML='');
+    drawHists();scatter();
+  }
+  document.getElementById('meta') && (function(){
+    // static (theme-independent) pieces once
+  })();
+  // build everything
+  (function initOnce(){
+    // meta/findings/picks/table/thresholds already reference cssv for legend/scatter only
+    picks();table();thresholds();foot();
+  })();
+  renderAll();
+  // re-render charts on theme change so colors track tokens
+  const mq=window.matchMedia('(prefers-color-scheme:dark)');
+  mq.addEventListener&&mq.addEventListener('change',renderAll);
+  new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>

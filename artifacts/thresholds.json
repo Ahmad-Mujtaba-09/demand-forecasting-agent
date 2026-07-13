@@ -1,0 +1,86 @@
+{
+  "thresholds": {
+    "adi_sparse_cut": 8.77,
+    "zero_share_tweedie_cut": 0.663,
+    "dow_season_cut": 0.042,
+    "max_median_ratio": 24.0,
+    "min_forecast": 0.0,
+    "basis": "data-relative: full pool n=30240, non-sparse n=27217; ADI P90 (full), zero-share P60 (non-sparse), DoW P90 (full), ratio P99 (full). S-B cutoffs absolute (see signals.py)."
+  },
+  "branch_counts_non_d": {
+    "standard": 16317,
+    "B1_tweedie": 10900,
+    "B2_baseline": 3023
+  },
+  "branch_fracs_non_d": {
+    "standard": 0.54,
+    "B1_tweedie": 0.36,
+    "B2_baseline": 0.1
+  },
+  "seasonal_feature_frac": 0.098,
+  "distribution_summary_non_d": {
+    "zero_share": {
+      "p10": 0.258,
+      "p25": 0.431,
+      "p50": 0.634,
+      "p75": 0.797,
+      "p90": 0.886,
+      "p95": 0.919,
+      "p99": 0.956
+    },
+    "adi": {
+      "p10": 1.347,
+      "p25": 1.758,
+      "p50": 2.734,
+      "p75": 4.918,
+      "p90": 8.765,
+      "p95": 12.39,
+      "p99": 22.693
+    },
+    "nonzero_count": {
+      "p10": 133.0,
+      "p25": 253.0,
+      "p50": 506.0,
+      "p75": 886.0,
+      "p90": 1252.1,
+      "p95": 1440.0,
+      "p99": 1746.61
+    },
+    "dow_season": {
+      "p10": 0.003,
+      "p25": 0.006,
+      "p50": 0.012,
+      "p75": 0.023,
+      "p90": 0.042,
+      "p95": 0.059,
+      "p99": 0.107
+    },
+    "spike_ratio": {
+      "p10": 0.0,
+      "p25": 0.002,
+      "p50": 0.009,
+      "p75": 0.022,
+      "p90": 0.038,
+      "p95": 0.047,
+      "p99": 0.069
+    },
+    "max_med_ratio": {
+      "p10": 3.0,
+      "p25": 4.0,
+      "p50": 6.0,
+      "p75": 8.0,
+      "p90": 11.0,
+      "p95": 13.558,
+      "p99": 24.0
+    },
+    "mean_nonzero": {
+      "p10": 1.163,
+      "p25": 1.308,
+      "p50": 1.652,
+      "p75": 2.403,
+      "p90": 4.189,
+      "p95": 6.316,
+      "p99": 14.623
+    }
+  }
+}
