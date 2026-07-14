@@ -16,6 +16,9 @@ Design notes / priors baked in:
 
 from __future__ import annotations
 
+from functools import lru_cache
+from pathlib import Path
+
 import pandas as pd
 
 from . import config
@@ -24,6 +27,21 @@ from . import config
 def day_to_int(d: str) -> int:
     """`'d_137'` -> `137`."""
     return int(d.split("_", 1)[1])
+
+
+@lru_cache(maxsize=None)
+def last_sales_day(sales_csv: Path = config.SALES_CSV) -> int:
+    """Highest `d_N` column present in the sales file (reads only the header).
+
+    Data-driven: derived from whatever M5-format file is supplied, so nothing
+    downstream has to hardcode M5's 1941. The last usable *training* day is this
+    minus the sealed evaluation horizon (`config.HORIZON`) -- see the runner.
+    """
+    header = pd.read_csv(sales_csv, nrows=0)
+    days = [day_to_int(c) for c in header.columns if c.startswith("d_")]
+    if not days:
+        raise ValueError(f"no d_* day columns found in sales file {sales_csv}")
+    return max(days)
 
 
 def day_columns(max_day: int = config.TRAIN_END_DAY) -> list[str]:

@@ -78,18 +78,18 @@ The critic is a real gate, not a rubber stamp. If a model fails, the report says
 
 ## 3. The branch logic (deterministic rules the executor applies)
 
-These are the documented, defensible rules. Thresholds are set in Phase 1/3 from real EDA distributions, not guessed here — the values below are placeholders to be calibrated and recorded.
+These are the documented, defensible rules. The objective thresholds were **calibrated and recorded in Phase 1** (per-dataset, data-relative); see "Phase 1 outcomes" below.
 
 | # | Condition (signal) | Action | Prior driving it |
 |---|---|---|---|
 | B1 | **High intermittency** — modelable *and* zero-share genuinely high (an upper percentile of the non-sparse population, not merely above median) | LightGBM with **Tweedie** objective | Zero-inflated non-negative demand; Tweedie's compound Poisson-Gamma form matches this shape, unlike squared error. Tweedie isn't free, so it's reserved for series that are *actually* zero-heavy. |
 | **Standard** | **Modelable but not high-intermittency** (survives the sparsity gate, zero-share below the B1 cut) | LightGBM with a **standard objective** (L2 / Poisson, decided by the Phase 3 bake-off) | Lower-intermittency modelable series genuinely don't need Tweedie — the wrong objective for a series that isn't zero-heavy. This is the explicit complement of B1, not an undocumented path. |
 | B2 | **Too sparse to model reliably** (ADI in the dataset's upper tail / signal too thin) | Fall back to **simple baseline** (moving average or Croston-style) | Not enough signal to justify a heavy model; a defensible simple estimate beats an overfit complex one. Knowing when *not* to use the heavy model is deliberate. |
-| B3 | **Seasonality above threshold** (day-of-week variance-explained, η²) | Add seasonal features | When a stable weekly cycle exists, giving the model explicit seasonal structure helps more than making it rediscover it. |
-| B3′ | **Seasonality below threshold** | Skip seasonal features; rely on calendar features (day-of-week, month, events, SNAP) | Weak/no seasonal signal → seasonal features add noise and cost; let LightGBM learn from calendar features directly. |
 | B4 | **Use case needs inventory intervals** | Add LightGBM **quantile** models at 0.1 / 0.5 / 0.9 | **Requirement-driven, not a bake-off winner.** Quantiles answer a different question (a range) than Tweedie (a point). Added because the use case asks for intervals, never tested *against* Tweedie. |
 
-Signals computed in EDA: **intermittency ratio** (zero-share), **seasonality** (day-of-week variance-explained, η² — chosen over STL, which is config-fragile on spiky retail data), **outlier/spike count**.
+**Seasonality is not a branch.** An earlier B3/B3′ pair (add/skip seasonal features per a day-of-week strength gate) was **dropped after Phase 1**: day-of-week explains only ~1% of the median item's demand variance (median η² ≈ 0.012) and the gate would have fired for only ~10% of series. A per-series seasonal toggle isn't worth its complexity. Instead, **every series gets the calendar features** (`wday`, `month`, events, SNAP) and the model learns whatever weekly structure exists. Assessing seasonality on *aggregated* series (where a weekly signal is stronger) is noted as **future work — not built now**.
+
+Signals computed in EDA: **intermittency ratio** (zero-share), **outlier/spike count**, and **day-of-week variance-explained (η²)** — the last retained as descriptive EDA (it *earned its place by driving the drop-B3 decision*), not as a live branch gate.
 
 ---
 
@@ -97,13 +97,20 @@ Signals computed in EDA: **intermittency ratio** (zero-share), **seasonality** (
 
 Each phase: **produce a sub-plan → review → revise if flagged → execute in small tested increments → show results across datasets → gate before proceeding.**
 
-### Phase 1 — EDA & dataset selection
+### Phase 1 — EDA & dataset selection ✅ complete (locked)
 **Goal:** Characterize M5 and pick the working datasets.
-- Compute the three branch signals per series (and aggregated): intermittency ratio, seasonality (day-of-week η²), outlier/spike count.
+- Compute the branch signals per series: intermittency ratio (zero-share, ADI, CV²/SB-class), outlier/spike count, day-of-week η².
 - Every output must map to a later decision (branch threshold or dataset pick). Cut anything decorative.
 - Select **3 sub-datasets at the pattern extremes** — fast-moving/dense, intermittent/zero-heavy, slow/sparse — plus **1 held-out sub-dataset** reserved for final agent testing (Phase 5), never touched before then.
-- **Deliverable:** an artifact (visual review) presenting the signal distributions and the proposed dataset picks, for review *before* anything is locked.
-- **Prior to state at the fork:** what defines each "extreme," and why those three cover the branch space (they map 1:1 to B1/B2/B3).
+
+**Phase 1 outcomes (locked — folded back into the plan):**
+- **Datasets** (`store × dept` cells, 250-series stratified sample each; C is 149 = full cell):
+  - **A — dense/fast:** `CA_3 × FOODS_3` (stresses Standard objective + baseline)
+  - **B — intermittent/Tweedie:** `CA_2 × HOUSEHOLD_2` — **confirmed**; 93% intermittent-class, the cleanest B1 showcase
+  - **C — slow/sparse:** `CA_4 × HOBBIES_2` (stresses B2 fallback)
+  - **D — held-out (mixed):** `TX_1 × FOODS_2` — frozen, untouched until Phase 5
+- **Thresholds** (data-relative, recomputed per dataset; from the non-held-out pool): B2 sparse cut **ADI ≥ 8.77** (P90 ADI), B1 Tweedie cut **zero-share ≥ 0.663** (P60 of the non-sparse subset), critic bounds **forecast ≥ 0** and **≤ 24× series median non-zero**. Syntetos–Boylan cutoffs (ADI 1.32, CV² 0.49) stay absolute and cited.
+- **B3 dropped** as a per-series gate (see §3) — the 1%-variance finding. Calendar features go to every series instead.
 
 ### Phase 2 — Baseline (the number to beat)
 **Goal:** An honest floor.
@@ -161,7 +168,7 @@ A phase is done when: its sub-plan was approved; code runs end-to-end on a clean
 ## 7. Open decisions to resolve within each sub-plan
 
 - **Branch thresholds — data-relative vs absolute, kept distinct:**
-  - **Data-relative (computed per-dataset, at processing time, on that dataset's non-held-out pool):** the B1 "high zero-share" cut (an **upper percentile** so "high" means high, computed on the **non-sparse subset** — the population that actually reaches the B1-vs-Standard decision, since B2 catches sparse series first; calibrated-on == applied-on), the B2 too-sparse floor (an upper percentile of the dataset's own ADI/demand-interval distribution — not a fixed number), the B3 seasonality cut (from the dataset's own day-of-week variance-explained distribution), and the critic's plausible-magnitude bound (from the dataset's own demand tail). These are **recomputed for whatever dataset comes in**, never a single global fit, and never calibrated across the held-out split.
+  - **Data-relative (computed per-dataset, at processing time, on that dataset's non-held-out pool):** the B1 "high zero-share" cut (an **upper percentile** so "high" means high, computed on the **non-sparse subset** — the population that actually reaches the B1-vs-Standard decision, since B2 catches sparse series first; calibrated-on == applied-on), the B2 too-sparse floor (an upper percentile of the dataset's own ADI/demand-interval distribution — not a fixed number), and the critic's plausible-magnitude bound (from the dataset's own demand tail). *(The former B3 seasonality cut is gone — B3 was dropped as a branch; see §3.)* These are **recomputed for whatever dataset comes in**, never a single global fit, and never calibrated across the held-out split.
   - **Absolute, with citation:** the Syntetos–Boylan classification cutoffs, **ADI = 1.32, CV² = 0.49** (Syntetos & Boylan, 2005) — published constants, not tuned by us. Kept as-is and cited. We do not make these relative for the sake of consistency.
   - Rule: *literature-standard constants stay absolute and cited; anything we would otherwise fit to a dataset becomes data-relative, computed per-dataset.*
 - WMAPE weighting scheme (M5 uses a specific hierarchical weighting; decide whether to adopt M5's WRMSSE-style weights or a simpler per-series WMAPE, and state the prior).

@@ -1,0 +1,254 @@
+{
+  "A": {
+    "cell": "CA_3 x FOODS_3",
+    "n_series": 250,
+    "sample_or_full": "sample",
+    "wmape_overall": 0.6208,
+    "wmape_l2_subset": 0.6204,
+    "wmape_naive_modelable": 0.732,
+    "l2_indicative": false,
+    "routing": {
+      "l2": 248,
+      "floor": 2
+    },
+    "config": {
+      "alpha": 1000.0,
+      "transform": "raw"
+    },
+    "wmape_by_sb_class": {
+      "intermittent": 1.0323,
+      "erratic": 0.548,
+      "lumpy": 0.8689,
+      "smooth": 0.4775
+    },
+    "wmape_by_fold": {
+      "fold_0": 0.7359,
+      "fold_1": 0.6297,
+      "fold_2": 0.5679,
+      "fold_3": 0.6171,
+      "fold_4": 0.5809
+    },
+    "leakage_check_pass": true,
+    "trials": [
+      {
+        "alpha": 0.1,
+        "transform": "raw",
+        "wmape": 0.620524100533861
+      },
+      {
+        "alpha": 1.0,
+        "transform": "raw",
+        "wmape": 0.6205242605035997
+      },
+      {
+        "alpha": 10.0,
+        "transform": "raw",
+        "wmape": 0.6205256843387339
+      },
+      {
+        "alpha": 100.0,
+        "transform": "raw",
+        "wmape": 0.6205291311012499
+      },
+      {
+        "alpha": 1000.0,
+        "transform": "raw",
+        "wmape": 0.620424429505636
+      },
+      {
+        "alpha": 0.1,
+        "transform": "log1p",
+        "wmape": 1.1081880564975026
+      },
+      {
+        "alpha": 1.0,
+        "transform": "log1p",
+        "wmape": 1.1081919471631145
+      },
+      {
+        "alpha": 10.0,
+        "transform": "log1p",
+        "wmape": 1.1082307467064805
+      },
+      {
+        "alpha": 100.0,
+        "transform": "log1p",
+        "wmape": 1.1086092265562533
+      },
+      {
+        "alpha": 1000.0,
+        "transform": "log1p",
+        "wmape": 1.111757747809843
+      }
+    ],
+    "wmape_by_volume_tercile": {
+      "low": 1.1176,
+      "high": 0.5115,
+      "mid": 0.8854
+    }
+  },
+  "B": {
+    "cell": "CA_2 x HOUSEHOLD_2",
+    "n_series": 250,
+    "sample_or_full": "sample",
+    "wmape_overall": 1.1055,
+    "wmape_l2_subset": 1.0916,
+    "wmape_naive_modelable": 1.2067,
+    "l2_indicative": false,
+    "routing": {
+      "l2": 223,
+      "floor": 27
+    },
+    "config": {
+      "alpha": 0.1,
+      "transform": "log1p"
+    },
+    "wmape_by_sb_class": {
+      "intermittent": 1.143,
+      "lumpy": 1.0694,
+      "smooth": 0.5825,
+      "erratic": 1.1125
+    },
+    "wmape_by_fold": {
+      "fold_0": 1.1219,
+      "fold_1": 1.0722,
+      "fold_2": 1.1421,
+      "fold_3": 1.1545,
+      "fold_4": 1.048
+    },
+    "leakage_check_pass": true,
+    "trials": [
+      {
+        "alpha": 0.1,
+        "transform": "raw",
+        "wmape": 1.1461468971406061
+      },
+      {
+        "alpha": 1.0,
+        "transform": "raw",
+        "wmape": 1.1461467692849334
+      },
+      {
+        "alpha": 10.0,
+        "transform": "raw",
+        "wmape": 1.146145627111907
+      },
+      {
+        "alpha": 100.0,
+        "transform": "raw",
+        "wmape": 1.1461433133293637
+      },
+      {
+        "alpha": 1000.0,
+        "transform": "raw",
+        "wmape": 1.1462788768598005
+      },
+      {
+        "alpha": 0.1,
+        "transform": "log1p",
+        "wmape": 1.0915527913039202
+      },
+      {
+        "alpha": 1.0,
+        "transform": "log1p",
+        "wmape": 1.091552830420269
+      },
+      {
+        "alpha": 10.0,
+        "transform": "log1p",
+        "wmape": 1.0915532892599356
+      },
+      {
+        "alpha": 100.0,
+        "transform": "log1p",
+        "wmape": 1.0915623481750945
+      },
+      {
+        "alpha": 1000.0,
+        "transform": "log1p",
+        "wmape": 1.0917230207845157
+      }
+    ]
+  },
+  "C": {
+    "cell": "CA_4 x HOBBIES_2",
+    "n_series": 149,
+    "sample_or_full": "full",
+    "wmape_overall": 1.6308,
+    "wmape_l2_subset": 1.4013,
+    "wmape_naive_modelable": 1.6685,
+    "l2_indicative": true,
+    "routing": {
+      "l2": 31,
+      "floor": 118
+    },
+    "config": {
+      "alpha": 10.0,
+      "transform": "log1p"
+    },
+    "wmape_by_sb_class": {
+      "intermittent": 1.6776,
+      "lumpy": 1.4845
+    },
+    "wmape_by_fold": {
+      "fold_0": 1.5103,
+      "fold_1": 1.6844,
+      "fold_2": 1.6171,
+      "fold_3": 1.6832,
+      "fold_4": 1.6996
+    },
+    "leakage_check_pass": true,
+    "trials": [
+      {
+        "alpha": 0.1,
+        "transform": "raw",
+        "wmape": 1.6446367974727951
+      },
+      {
+        "alpha": 1.0,
+        "transform": "raw",
+        "wmape": 1.6446261758647212
+      },
+      {
+        "alpha": 10.0,
+        "transform": "raw",
+        "wmape": 1.6446039817532276
+      },
+      {
+        "alpha": 100.0,
+        "transform": "raw",
+        "wmape": 1.6457586140979423
+      },
+      {
+        "alpha": 1000.0,
+        "transform": "raw",
+        "wmape": 1.6566027194019228
+      },
+      {
+        "alpha": 0.1,
+        "transform": "log1p",
+        "wmape": 1.4013389899269102
+      },
+      {
+        "alpha": 1.0,
+        "transform": "log1p",
+        "wmape": 1.4013330633592713
+      },
+      {
+        "alpha": 10.0,
+        "transform": "log1p",
+        "wmape": 1.401316608897206
+      },
+      {
+        "alpha": 100.0,
+        "transform": "log1p",
+        "wmape": 1.401865727778172
+      },
+      {
+        "alpha": 1000.0,
+        "transform": "log1p",
+        "wmape": 1.407257739814155
+      }
+    ]
+  }
+}
