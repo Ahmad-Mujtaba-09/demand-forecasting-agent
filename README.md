@@ -16,8 +16,8 @@ dataset's own distribution. The **evidence is M5 only**: it has not been run on 
 retailer's data. Generality here is a design property argued for, not a set of features
 built — there are deliberately no format converters or column auto-detection.
 
-> **Status:** Phase 1 (EDA & dataset selection) complete. ML core in progress.
-> **56 tests passing.** · Validated on M5 (30,490 store-item series).
+> **Status:** Phase 1 (EDA & dataset selection) and Phase 2 (L2 baseline) complete. ML core in progress.
+> **94 tests passing.** · Validated on M5 (30,490 store-item series).
 
 ---
 
@@ -66,8 +66,13 @@ which branch applies, it does not invent modeling decisions:
 | **B1** | High intermittency — modelable *and* zero-share genuinely high | LightGBM **Tweedie** | Zero-inflated demand; Tweedie's compound Poisson-Gamma form fits, unlike squared error. |
 | **Standard** | Modelable but below the B1 cut | LightGBM **L2 / Poisson** (per bake-off) | Lower-intermittency series don't need Tweedie. Explicit complement of B1. |
 | **B2** | Too sparse (ADI in the upper tail) | **Simple baseline** (MA / Croston) | Too little signal for a heavy model; knowing when *not* to use it is deliberate. |
-| **B3 / B3′** | Weekly seasonality above / below cut | Add / skip seasonal features | Give explicit weekly structure only when it exists; else let calendar features carry it. |
 | **B4** | Use case needs inventory intervals | LightGBM **quantiles** (0.1/0.5/0.9) | Requirement-driven, not a bake-off winner — a range answers a different question than a point. |
+
+**Seasonality is not a branch.** An earlier per-series seasonal gate (B3/B3′) was
+**dropped after Phase 1**: day-of-week explains only ~1% of the median item's demand
+variance (median η² ≈ 0.012) and the gate would have fired for only ~10% of series. Every
+series instead gets the calendar features (weekday, month, events, SNAP) and the model
+learns whatever weekly structure exists.
 
 The **Critic** is a real gate: WMAPE vs threshold plus sanity checks (non-negative
 forecasts, magnitudes within a plausible range). A model that fails is flagged, not set.
@@ -114,12 +119,47 @@ untouched until Phase 5.
 |---|---|---|
 | B2 sparse cut | `ADI ≥ 8.77` | P90 of full-pool ADI (data-relative) |
 | B1 Tweedie cut | `zero-share ≥ 0.663` | **P60 of the non-sparse subset** — genuinely high, computed on the population it governs (data-relative) |
-| B3 seasonal cut | `η² ≥ 0.042` | P90 of day-of-week variance-explained (data-relative) |
 | Critic bounds | `≥ 0`, `≤ 24×` median non-zero | Non-negativity (absolute) + P99 tail (data-relative) |
 | SB class cutoffs | `ADI 1.32`, `CV² 0.49` | **Absolute** — Syntetos & Boylan (2005), cited, never tuned |
 
-Resulting branch coverage: **standard 54% · Tweedie 36% · sparse-baseline 10%**; the
-seasonal branch fires for ~10%.
+Resulting branch coverage: **standard 54% · Tweedie 36% · sparse-baseline 10%**. (The
+day-of-week η² cut was calibrated too, but the seasonal branch was dropped — see above —
+so it no longer gates anything.)
+
+---
+
+## What's implemented (Phase 2 — the baseline)
+
+An honest **L2 (squared-error) linear-regression floor** — the number every Phase 3 model
+must beat. Tuned as well as it can honestly be, so the bake-off is a fair fight. New modules
+under [`src/dfa/`](src/dfa/):
+
+| Module | Role |
+|---|---|
+| [`metrics.py`](src/dfa/metrics.py) | **WMAPE** — volume-weighted, sum-then-divide (`Σ\|a−f\| / Σa`), robust on zero-heavy series; per-group and volume-tercile breakdowns. WRMSSE rejected (re-imports the squared-error sensitivity Tweedie avoids). |
+| [`splits.py`](src/dfa/splits.py) | **Rolling-origin** (expanding-window) folds, horizon 28, never shuffled. Fold count is **data-driven** — `min(5, (train_end − 365) // horizon)` — with a min-history guard that raises rather than train on a thin window. |
+| [`features.py`](src/dfa/features.py) | The **frozen feature set** (carried unchanged into Phase 3): calendar one-hots (fixed weekday/month; event types **extracted from the calendar** for both slots; SNAP resolved per-row by state), trailing-only price fill, lags 28/35/42, rolling means. Every dynamic feature is lagged **≥ horizon** → direct multi-horizon, leakage-safe by construction. |
+| [`baseline.py`](src/dfa/baseline.py) | Pooled **Ridge** per dataset (α + raw/log1p tuned on the CV), non-negativity clamp, **B2 → mean-of-history floor** (sparse series aren't given to L2), and a naive comparator scored on the modelable series only. |
+| [`run_baseline.py`](src/dfa/run_baseline.py) | Runs the baseline across A/B/C; the true last usable day is derived from the data (`last_sales_day() − horizon`). Emits WMAPE overall + by SB class + (A only) by volume tercile, per-fold spread, routing, and an empirical leakage check. |
+
+### Baseline results (5-fold rolling-origin CV, WMAPE)
+
+| Dataset | Cell | n | Sample/Full | **WMAPE (floor)** | L2 vs naive (modelable) | Config |
+|---|---|---|---|---|---|---|
+| **A** — dense | `CA_3 × FOODS_3` | 250 | sample | **0.621** | 0.621 vs 0.732 | Ridge α=1000, raw |
+| **B** — intermittent | `CA_2 × HOUSEHOLD_2` | 250 | sample | **1.106** | 1.092 vs 1.207 | Ridge α=0.1, log1p |
+| **C** — slow / sparse | `CA_4 × HOBBIES_2` | 149 | **full** | **1.631** | 1.401 vs 1.669 *(indicative, low n)* | Ridge α=10, log1p |
+
+- **L2 beats a constant mean on every dataset's modelable series** — a real floor, not a
+  strawman. WMAPE climbs A→B→C, tracking intermittency; > 1 on B/C is expected for
+  zero-heavy L2 and is exactly the gap Tweedie should close in Phase 3.
+- **C is the sparse-fallback showcase:** 118 of 149 series route to the mean floor; its
+  31-series L2 number is tagged *indicative* (high-variance, not a stable floor).
+- Per-class and (A-only) volume-tercile breakdowns confirm the aggregate is carried by the
+  dense / high-volume series — the intermittent tail and low-volume third are 2–2.5× worse.
+- **Leakage check passes** on all three: perturbing future units changes features only
+  at/after `origin + horizon`, never before. Full write-up:
+  [`docs/results/02_phase2_baseline_results.md`](docs/results/02_phase2_baseline_results.md).
 
 ---
 
@@ -133,7 +173,8 @@ Each is documented in the plans and enforced by a test.
 - **Day-of-week η², not STL, for seasonality.** STL strength swings ~3× on its `robust`
   flag on spiky retail data. η² (variance explained by weekday) is deterministic,
   config-free, and spike-honest. *Finding:* weekly seasonality is weak at the item level
-  (median η² ≈ 0.012), so the seasonal branch rarely fires.
+  (median η² ≈ 0.012) — which is exactly what **retired the per-series seasonal branch**;
+  calendar features now go to every series instead.
 - **Data-relative vs absolute thresholds.** Anything otherwise tuned to a dataset is a
   percentile of that dataset's own distribution; literature constants (Syntetos–Boylan)
   stay absolute and cited.
@@ -156,12 +197,16 @@ demand_forecasting_agent/
 ├── requirements.txt
 ├── pyproject.toml                  # pytest config (adds src/ to path)
 ├── data/m5-forecasting-accuracy/   # M5 CSVs (not tracked; see Setup)
-├── docs/plans/
-│   ├── 00_master_plan.md           # overarching plan, all phases
-│   └── 01_phase1_eda_plan.md       # Phase 1 sub-plan
+├── docs/
+│   ├── plans/
+│   │   ├── 00_master_plan.md       # overarching plan, all phases
+│   │   ├── 01_phase1_eda_plan.md   # Phase 1 sub-plan
+│   │   └── 02_phase2_baseline_plan.md
+│   └── results/
+│       └── 02_phase2_baseline_results.md
 ├── src/dfa/                        # ML core (Phases 1–3)
-├── tests/                          # one suite per module (56 tests)
-└── artifacts/                      # signal table, selection, thresholds, review
+├── tests/                          # one suite per module (94 tests)
+└── artifacts/                      # signal table, selection, thresholds, review, baseline results
 ```
 
 ---
@@ -185,8 +230,11 @@ python -m dfa.build_signal_table      # -> artifacts/signal_table.parquet   (~15
 python -m dfa.select_datasets         # -> artifacts/datasets/selection.json
 python -m dfa.calibrate_thresholds    # -> artifacts/thresholds.json
 
-# 4. tests
-pytest                                # 56 passing
+# 4. run the Phase 2 baseline across A/B/C
+python -m dfa.run_baseline            # -> artifacts/phase2_baseline_results.json  (~1 min)
+
+# 5. tests
+pytest                                # 94 passing
 ```
 
 `pyproject.toml` puts `src/` on the path for pytest automatically; the `PYTHONPATH=src`
@@ -202,7 +250,7 @@ sub-plan, small tested increments, results shown across all datasets before proc
 | Phase | Scope | Status |
 |---|---|---|
 | **1 — EDA & dataset selection** | Three branch signals over M5; four sub-datasets; calibrated thresholds. | ✅ Complete |
-| **2 — Baseline** | Plain L2 (linear regression) baseline per dataset — the number every later model must beat. | Planned |
+| **2 — Baseline** | Plain L2 (linear regression) baseline per dataset — the number every later model must beat. WMAPE on a rolling-origin holdout, frozen feature set, sparse-series mean fallback. | ✅ Complete |
 | **3 — LightGBM bake-off** | Per dataset: L2 vs Tweedie vs Poisson on WMAPE, proper time-series holdout (expanding/rolling, never shuffled), with an explicit leakage check on lag/rolling features. Quantile models added per B4. | Planned |
 | **4 — Agent wrapper (Agno)** | Wrap the working core: planner → executor → critic → report. The critic must actually gate acceptance. | Planned |
 | **5 — Final test** | Run the finished agent end-to-end on the held-out sub-dataset D. | Planned |
@@ -213,6 +261,7 @@ sub-plan, small tested increments, results shown across all datasets before proc
 
 - **Master plan:** [docs/plans/00_master_plan.md](docs/plans/00_master_plan.md)
 - **Phase 1 sub-plan:** [docs/plans/01_phase1_eda_plan.md](docs/plans/01_phase1_eda_plan.md)
+- **Phase 2 sub-plan:** [docs/plans/02_phase2_baseline_plan.md](docs/plans/02_phase2_baseline_plan.md) · **results:** [docs/results/02_phase2_baseline_results.md](docs/results/02_phase2_baseline_results.md)
 - **Dataset:** M5 Forecasting – Accuracy (Kaggle)
 - **Intermittency classification:** Syntetos, A. A., & Boylan, J. E. (2005). *The accuracy
   of intermittent demand estimates.* International Journal of Forecasting, 21(2), 303–314.
