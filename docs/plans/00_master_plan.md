@@ -20,7 +20,7 @@ These hold across every phase. They exist so the reasoning stays visible and def
 2. **State the prior at every fork.** At each decision point (a threshold, a model choice, a feature toggle) write the driving assumption in plain language *before* the choice. Reasoning is explicit, never implied.
 3. **Every EDA output feeds a decision.** If a computed statistic or plot does not change a later branch, threshold, or dataset pick, it is cut. No decorative analysis.
 4. **Deterministic, defensible branch logic.** The modeling branches are functions *I* write and can defend. The agent selects which branch applies per documented rules; it does not invent modeling decisions.
-5. **WMAPE is the yardstick.** Weighted Mean Absolute Percentage Error is the headline metric. Every model after the baseline must beat the baseline's WMAPE on a proper time-series holdout to be taken seriously.
+5. **WMAPE is the yardstick.** Weighted Mean Absolute Percentage Error is the headline metric. Every model after the baseline must beat `min(baseline WMAPE, 1.0)` on a proper time-series holdout to be taken seriously — the 1.0 cap because a zero forecast scores exactly 1.0 under this metric, so any bar above it is one that doing nothing already clears.
 6. **Time-series discipline.** Holdouts are expanding/rolling windows on the time axis. **Never shuffle.** Features (lags, rolling stats) are computed *within* the train/test split boundary, never across the full series.
 7. **Test as you go.** Small verifiable increments. Write tests and show them passing. Every executable step ends on a working run. No large untested dumps.
 8. **Flag, don't fake.** Validation and the critic flag problems rather than guessing or silently patching. A model that fails the critic is flagged, not accepted.
@@ -115,7 +115,7 @@ Each phase: **produce a sub-plan → review → revise if flagged → execute in
 ### Phase 2 — Baseline (the number to beat)
 **Goal:** An honest floor.
 - Plain **L2 / linear regression** baseline, trained to the best it can honestly do on each of the 3 datasets.
-- This WMAPE is the bar every later model must beat.
+- **The bar is `min(baseline_wmape, 1.0)` per dataset** — not the baseline alone. A zero ("predict nothing") forecast scores exactly 1.0 under sum-then-divide WMAPE, so a baseline above 1.0 is one a free constant already beats, and clearing it would prove nothing. **Outcome: A = 0.621 (the fitted floor is a real bar); B and C = 1.000 (the baseline lost to zero).**
 - **Deliverable:** baseline WMAPE across all 3 datasets + code, for review.
 
 ### Phase 3 — LightGBM bake-off

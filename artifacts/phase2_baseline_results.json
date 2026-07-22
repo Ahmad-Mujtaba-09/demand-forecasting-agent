@@ -3,88 +3,139 @@
     "cell": "CA_3 x FOODS_3",
     "n_series": 250,
     "sample_or_full": "sample",
-    "wmape_overall": 0.6208,
+    "wmape_overall": 0.6207,
     "wmape_l2_subset": 0.6204,
     "wmape_naive_modelable": 0.732,
+    "wmape_zero": 1.0,
+    "phase3_bar": 0.6207,
+    "baseline_beats_zero": true,
     "l2_indicative": false,
     "routing": {
       "l2": 248,
       "floor": 2
     },
     "config": {
-      "alpha": 1000.0,
+      "alpha": 10000.0,
       "transform": "raw"
     },
     "wmape_by_sb_class": {
-      "intermittent": 1.0323,
-      "erratic": 0.548,
-      "lumpy": 0.8689,
-      "smooth": 0.4775
+      "intermittent": 1.029,
+      "erratic": 0.5484,
+      "lumpy": 0.8692,
+      "smooth": 0.4779
     },
     "wmape_by_fold": {
-      "fold_0": 0.7359,
-      "fold_1": 0.6297,
-      "fold_2": 0.5679,
-      "fold_3": 0.6171,
-      "fold_4": 0.5809
+      "fold_0": 0.7441,
+      "fold_1": 0.629,
+      "fold_2": 0.5668,
+      "fold_3": 0.6155,
+      "fold_4": 0.578
+    },
+    "transform_diagnostics": {
+      "log1p": {
+        "best_alpha": 0.01,
+        "wmape": 1.1082,
+        "bias": 1.1003,
+        "alpha_spread": 0.00931
+      },
+      "raw": {
+        "best_alpha": 10000.0,
+        "wmape": 0.6204,
+        "bias": 0.9991,
+        "alpha_spread": 0.00014
+      }
     },
     "leakage_check_pass": true,
     "trials": [
       {
+        "alpha": 0.01,
+        "transform": "raw",
+        "wmape": 0.6205240843520033,
+        "bias": 0.9984599989596699
+      },
+      {
         "alpha": 0.1,
         "transform": "raw",
-        "wmape": 0.620524100533861
+        "wmape": 0.620524100533861,
+        "bias": 0.9984601677695865
       },
       {
         "alpha": 1.0,
         "transform": "raw",
-        "wmape": 0.6205242605035997
+        "wmape": 0.6205242605035997,
+        "bias": 0.9984618473697829
       },
       {
         "alpha": 10.0,
         "transform": "raw",
-        "wmape": 0.6205256843387339
+        "wmape": 0.6205256843387339,
+        "bias": 0.9984778318486158
       },
       {
         "alpha": 100.0,
         "transform": "raw",
-        "wmape": 0.6205291311012499
+        "wmape": 0.6205291311012499,
+        "bias": 0.9985828279369445
       },
       {
         "alpha": 1000.0,
         "transform": "raw",
-        "wmape": 0.620424429505636
+        "wmape": 0.620424429505636,
+        "bias": 0.9987203312733571
+      },
+      {
+        "alpha": 10000.0,
+        "transform": "raw",
+        "wmape": 0.6203892504045146,
+        "bias": 0.9990763838837793
+      },
+      {
+        "alpha": 0.01,
+        "transform": "log1p",
+        "wmape": 1.108187667322143,
+        "bias": 1.1002850524378371
       },
       {
         "alpha": 0.1,
         "transform": "log1p",
-        "wmape": 1.1081880564975026
+        "wmape": 1.1081880564975026,
+        "bias": 1.10028542095714
       },
       {
         "alpha": 1.0,
         "transform": "log1p",
-        "wmape": 1.1081919471631145
+        "wmape": 1.1081919471631145,
+        "bias": 1.1002891008311826
       },
       {
         "alpha": 10.0,
         "transform": "log1p",
-        "wmape": 1.1082307467064805
+        "wmape": 1.1082307467064805,
+        "bias": 1.100325388963464
       },
       {
         "alpha": 100.0,
         "transform": "log1p",
-        "wmape": 1.1086092265562533
+        "wmape": 1.1086092265562533,
+        "bias": 1.1006517490278882
       },
       {
         "alpha": 1000.0,
         "transform": "log1p",
-        "wmape": 1.111757747809843
+        "wmape": 1.111757747809843,
+        "bias": 1.1028416337977347
+      },
+      {
+        "alpha": 10000.0,
+        "transform": "log1p",
+        "wmape": 1.1174975992160194,
+        "bias": 1.1006678568306398
       }
     ],
     "wmape_by_volume_tercile": {
-      "low": 1.1176,
-      "high": 0.5115,
-      "mid": 0.8854
+      "low": 1.1119,
+      "high": 0.5123,
+      "mid": 0.8843
     }
   },
   "B": {
@@ -94,13 +145,16 @@
     "wmape_overall": 1.1055,
     "wmape_l2_subset": 1.0916,
     "wmape_naive_modelable": 1.2067,
+    "wmape_zero": 1.0,
+    "phase3_bar": 1.0,
+    "baseline_beats_zero": false,
     "l2_indicative": false,
     "routing": {
       "l2": 223,
       "floor": 27
     },
     "config": {
-      "alpha": 0.1,
+      "alpha": 0.01,
       "transform": "log1p"
     },
     "wmape_by_sb_class": {
@@ -116,57 +170,105 @@
       "fold_3": 1.1545,
       "fold_4": 1.048
     },
+    "transform_diagnostics": {
+      "log1p": {
+        "best_alpha": 0.01,
+        "wmape": 1.0916,
+        "bias": 0.6857,
+        "alpha_spread": 0.001709
+      },
+      "raw": {
+        "best_alpha": 100.0,
+        "wmape": 1.1461,
+        "bias": 0.9791,
+        "alpha_spread": 0.001972
+      }
+    },
     "leakage_check_pass": true,
     "trials": [
       {
+        "alpha": 0.01,
+        "transform": "raw",
+        "wmape": 1.1461469100694415,
+        "bias": 0.9792470575817813
+      },
+      {
         "alpha": 0.1,
         "transform": "raw",
-        "wmape": 1.1461468971406061
+        "wmape": 1.1461468971406061,
+        "bias": 0.9792469050883951
       },
       {
         "alpha": 1.0,
         "transform": "raw",
-        "wmape": 1.1461467692849334
+        "wmape": 1.1461467692849334,
+        "bias": 0.979245384893554
       },
       {
         "alpha": 10.0,
         "transform": "raw",
-        "wmape": 1.146145627111907
+        "wmape": 1.146145627111907,
+        "bias": 0.9792306339075928
       },
       {
         "alpha": 100.0,
         "transform": "raw",
-        "wmape": 1.1461433133293637
+        "wmape": 1.1461433133293637,
+        "bias": 0.9791130866109414
       },
       {
         "alpha": 1000.0,
         "transform": "raw",
-        "wmape": 1.1462788768598005
+        "wmape": 1.1462788768598005,
+        "bias": 0.978454172357128
+      },
+      {
+        "alpha": 10000.0,
+        "transform": "raw",
+        "wmape": 1.1481154952240236,
+        "bias": 0.9741970940974578
+      },
+      {
+        "alpha": 0.01,
+        "transform": "log1p",
+        "wmape": 1.091552787463437,
+        "bias": 0.6856677712830758
       },
       {
         "alpha": 0.1,
         "transform": "log1p",
-        "wmape": 1.0915527913039202
+        "wmape": 1.0915527913039202,
+        "bias": 0.6856676784098771
       },
       {
         "alpha": 1.0,
         "transform": "log1p",
-        "wmape": 1.091552830420269
+        "wmape": 1.091552830420269,
+        "bias": 0.6856667535619598
       },
       {
         "alpha": 10.0,
         "transform": "log1p",
-        "wmape": 1.0915532892599356
+        "wmape": 1.0915532892599356,
+        "bias": 0.6856578744752896
       },
       {
         "alpha": 100.0,
         "transform": "log1p",
-        "wmape": 1.0915623481750945
+        "wmape": 1.0915623481750945,
+        "bias": 0.6855934830326349
       },
       {
         "alpha": 1000.0,
         "transform": "log1p",
-        "wmape": 1.0917230207845157
+        "wmape": 1.0917230207845157,
+        "bias": 0.6853437357351362
+      },
+      {
+        "alpha": 10000.0,
+        "transform": "log1p",
+        "wmape": 1.0932614533126361,
+        "bias": 0.6830974726451675
       }
     ]
   },
@@ -177,6 +279,9 @@
     "wmape_overall": 1.6308,
     "wmape_l2_subset": 1.4013,
     "wmape_naive_modelable": 1.6685,
+    "wmape_zero": 1.0,
+    "phase3_bar": 1.0,
+    "baseline_beats_zero": false,
     "l2_indicative": true,
     "routing": {
       "l2": 31,
@@ -197,57 +302,105 @@
       "fold_3": 1.6832,
       "fold_4": 1.6996
     },
+    "transform_diagnostics": {
+      "log1p": {
+        "best_alpha": 10.0,
+        "wmape": 1.4013,
+        "bias": 0.6451,
+        "alpha_spread": 0.017867
+      },
+      "raw": {
+        "best_alpha": 10.0,
+        "wmape": 1.6446,
+        "bias": 1.0381,
+        "alpha_spread": 0.038266
+      }
+    },
     "leakage_check_pass": true,
     "trials": [
       {
+        "alpha": 0.01,
+        "transform": "raw",
+        "wmape": 1.6446379867840502,
+        "bias": 1.0381337040623024
+      },
+      {
         "alpha": 0.1,
         "transform": "raw",
-        "wmape": 1.6446367974727951
+        "wmape": 1.6446367974727951,
+        "bias": 1.0381318680745395
       },
       {
         "alpha": 1.0,
         "transform": "raw",
-        "wmape": 1.6446261758647212
+        "wmape": 1.6446261758647212,
+        "bias": 1.0381153116084076
       },
       {
         "alpha": 10.0,
         "transform": "raw",
-        "wmape": 1.6446039817532276
+        "wmape": 1.6446039817532276,
+        "bias": 1.038067913106339
       },
       {
         "alpha": 100.0,
         "transform": "raw",
-        "wmape": 1.6457586140979423
+        "wmape": 1.6457586140979423,
+        "bias": 1.0394815063360996
       },
       {
         "alpha": 1000.0,
         "transform": "raw",
-        "wmape": 1.6566027194019228
+        "wmape": 1.6566027194019228,
+        "bias": 1.0533811791917893
+      },
+      {
+        "alpha": 10000.0,
+        "transform": "raw",
+        "wmape": 1.6828696551760114,
+        "bias": 1.0872625344937796
+      },
+      {
+        "alpha": 0.01,
+        "transform": "log1p",
+        "wmape": 1.4013396475707034,
+        "bias": 0.6451691214578362
       },
       {
         "alpha": 0.1,
         "transform": "log1p",
-        "wmape": 1.4013389899269102
+        "wmape": 1.4013389899269102,
+        "bias": 0.6451680869450703
       },
       {
         "alpha": 1.0,
         "transform": "log1p",
-        "wmape": 1.4013330633592713
+        "wmape": 1.4013330633592713,
+        "bias": 0.6451586631461562
       },
       {
         "alpha": 10.0,
         "transform": "log1p",
-        "wmape": 1.401316608897206
+        "wmape": 1.401316608897206,
+        "bias": 0.6451246250889726
       },
       {
         "alpha": 100.0,
         "transform": "log1p",
-        "wmape": 1.401865727778172
+        "wmape": 1.401865727778172,
+        "bias": 0.6457543291949808
       },
       {
         "alpha": 1000.0,
         "transform": "log1p",
-        "wmape": 1.407257739814155
+        "wmape": 1.407257739814155,
+        "bias": 0.6522084336433499
+      },
+      {
+        "alpha": 10000.0,
+        "transform": "log1p",
+        "wmape": 1.4191832538490532,
+        "bias": 0.6649648470800765
       }
     ]
   }

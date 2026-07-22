@@ -1,0 +1,245 @@
+{
+  "zeroBar": 1.0,
+  "datasets": [
+    {
+      "key": "A",
+      "label": "A \u2014 dense",
+      "cell": "CA_3 x FOODS_3",
+      "n": 250,
+      "coverage": "sample",
+      "baseline": 0.6207,
+      "l2": 0.6204,
+      "naive": 0.732,
+      "zero": 1.0,
+      "bar": 0.6207,
+      "beats_zero": true,
+      "indicative": false,
+      "routing": {
+        "l2": 248,
+        "floor": 2
+      },
+      "alpha": 10000.0,
+      "transform": "raw",
+      "sb": [
+        {
+          "cls": "smooth",
+          "wmape": 0.4779
+        },
+        {
+          "cls": "erratic",
+          "wmape": 0.5484
+        },
+        {
+          "cls": "intermittent",
+          "wmape": 1.029
+        },
+        {
+          "cls": "lumpy",
+          "wmape": 0.8692
+        }
+      ],
+      "folds": [
+        {
+          "fold": 0,
+          "wmape": 0.7441
+        },
+        {
+          "fold": 1,
+          "wmape": 0.629
+        },
+        {
+          "fold": 2,
+          "wmape": 0.5668
+        },
+        {
+          "fold": 3,
+          "wmape": 0.6155
+        },
+        {
+          "fold": 4,
+          "wmape": 0.578
+        }
+      ],
+      "terciles": [
+        {
+          "band": "low",
+          "wmape": 1.1119
+        },
+        {
+          "band": "mid",
+          "wmape": 0.8843
+        },
+        {
+          "band": "high",
+          "wmape": 0.5123
+        }
+      ],
+      "transforms": [
+        {
+          "name": "raw",
+          "wmape": 0.6204,
+          "bias": 0.9991,
+          "alpha": 10000.0,
+          "spread": 0.00014
+        },
+        {
+          "name": "log1p",
+          "wmape": 1.1082,
+          "bias": 1.1003,
+          "alpha": 0.01,
+          "spread": 0.00931
+        }
+      ],
+      "leakage": true
+    },
+    {
+      "key": "B",
+      "label": "B \u2014 intermittent",
+      "cell": "CA_2 x HOUSEHOLD_2",
+      "n": 250,
+      "coverage": "sample",
+      "baseline": 1.1055,
+      "l2": 1.0916,
+      "naive": 1.2067,
+      "zero": 1.0,
+      "bar": 1.0,
+      "beats_zero": false,
+      "indicative": false,
+      "routing": {
+        "l2": 223,
+        "floor": 27
+      },
+      "alpha": 0.01,
+      "transform": "log1p",
+      "sb": [
+        {
+          "cls": "smooth",
+          "wmape": 0.5825
+        },
+        {
+          "cls": "erratic",
+          "wmape": 1.1125
+        },
+        {
+          "cls": "intermittent",
+          "wmape": 1.143
+        },
+        {
+          "cls": "lumpy",
+          "wmape": 1.0694
+        }
+      ],
+      "folds": [
+        {
+          "fold": 0,
+          "wmape": 1.1219
+        },
+        {
+          "fold": 1,
+          "wmape": 1.0722
+        },
+        {
+          "fold": 2,
+          "wmape": 1.1421
+        },
+        {
+          "fold": 3,
+          "wmape": 1.1545
+        },
+        {
+          "fold": 4,
+          "wmape": 1.048
+        }
+      ],
+      "terciles": null,
+      "transforms": [
+        {
+          "name": "raw",
+          "wmape": 1.1461,
+          "bias": 0.9791,
+          "alpha": 100.0,
+          "spread": 0.001972
+        },
+        {
+          "name": "log1p",
+          "wmape": 1.0916,
+          "bias": 0.6857,
+          "alpha": 0.01,
+          "spread": 0.001709
+        }
+      ],
+      "leakage": true
+    },
+    {
+      "key": "C",
+      "label": "C \u2014 slow/sparse",
+      "cell": "CA_4 x HOBBIES_2",
+      "n": 149,
+      "coverage": "full",
+      "baseline": 1.6308,
+      "l2": 1.4013,
+      "naive": 1.6685,
+      "zero": 1.0,
+      "bar": 1.0,
+      "beats_zero": false,
+      "indicative": true,
+      "routing": {
+        "l2": 31,
+        "floor": 118
+      },
+      "alpha": 10.0,
+      "transform": "log1p",
+      "sb": [
+        {
+          "cls": "intermittent",
+          "wmape": 1.6776
+        },
+        {
+          "cls": "lumpy",
+          "wmape": 1.4845
+        }
+      ],
+      "folds": [
+        {
+          "fold": 0,
+          "wmape": 1.5103
+        },
+        {
+          "fold": 1,
+          "wmape": 1.6844
+        },
+        {
+          "fold": 2,
+          "wmape": 1.6171
+        },
+        {
+          "fold": 3,
+          "wmape": 1.6832
+        },
+        {
+          "fold": 4,
+          "wmape": 1.6996
+        }
+      ],
+      "terciles": null,
+      "transforms": [
+        {
+          "name": "raw",
+          "wmape": 1.6446,
+          "bias": 1.0381,
+          "alpha": 10.0,
+          "spread": 0.038266
+        },
+        {
+          "name": "log1p",
+          "wmape": 1.4013,
+          "bias": 0.6451,
+          "alpha": 10.0,
+          "spread": 0.017867
+        }
+      ],
+      "leakage": true
+    }
+  ],
+  "nBarsCleared": 1
+}

@@ -4,7 +4,9 @@ Loads each selected sub-dataset (sampled ids from Phase 1), builds the frozen
 features, routes sparse (B2) series to the mean floor, tunes and fits the pooled
 Ridge on the rolling-origin folds, and reports:
 
-  - overall WMAPE (baseline) + the naive-mean comparator
+  - overall WMAPE (baseline) + the naive-mean and zero comparators
+  - the Phase 3 bar: min(baseline, zero). A fitted floor that loses to "predict
+    nothing" is not the bar -- zero is.
   - WMAPE by Syntetos-Boylan class (the intermittent-tail honesty check)
   - WMAPE by volume tercile -- DATASET A ONLY (sub-plan sec 1.4)
   - per-fold WMAPE spread (stability)
@@ -84,6 +86,32 @@ def _b2_ids(signal_rows: pd.DataFrame, thr: Thresholds) -> set[str]:
     return set(signal_rows.loc[b2, "id"])
 
 
+def _transform_diagnostics(trials: list[dict]) -> dict[str, dict[str, float]]:
+    """Best trial per target space, with its forecast bias -- why a transform wins.
+
+    Reports each transform's best achievable WMAPE alongside `bias` =
+    sum(forecast)/sum(actual). The pair is the point: on the intermittent datasets
+    log1p wins *while* biased far below 1.0, i.e. it wins by underpredicting toward
+    zero rather than by modelling better -- which is only legible when the two
+    numbers sit side by side. Also exposes the alpha spread within the winning
+    transform, the evidence that alpha selection is immaterial here.
+    """
+    out: dict[str, dict[str, float]] = {}
+    for tr in {t["transform"] for t in trials}:
+        rows = [t for t in trials if t["transform"] == tr and not np.isnan(t["wmape"])]
+        if not rows:
+            continue
+        best = min(rows, key=lambda t: t["wmape"])
+        out[tr] = {
+            "best_alpha": best["alpha"],
+            "wmape": round(best["wmape"], 4),
+            "bias": round(best["bias"], 4),
+            "alpha_spread": round(max(r["wmape"] for r in rows)
+                                  - min(r["wmape"] for r in rows), 6),
+        }
+    return out
+
+
 def _wmape_by_fold(pred: pd.DataFrame) -> dict[str, float]:
     return {
         f"fold_{int(k)}": round(wmape(g["actual"], g["forecast"]), 4)
@@ -107,7 +135,7 @@ def evaluate_dataset(label: str, meta: dict, table: pd.DataFrame, thr: Threshold
     folds = make_folds(train_end=train_end)
     res = bl.run_baseline(feat, folds, b2_ids)
 
-    base, naive = res["baseline"], res["naive"]
+    base, naive, zero = res["baseline"], res["naive"], res["zero"]
     sb = signal_rows.set_index("id")["sb_class"]
 
     overall = wmape(base["actual"], base["forecast"])
@@ -120,6 +148,14 @@ def evaluate_dataset(label: str, meta: dict, table: pd.DataFrame, thr: Threshold
     l2_only = base[base["method"] == "l2"]
     l2_wmape = wmape(l2_only["actual"], l2_only["forecast"]) if len(l2_only) else float("nan")
     naive_l2 = wmape(naive["actual"], naive["forecast"]) if len(naive) else float("nan")
+    # trivial "predict nothing" anchor, same rows as `base` -> identically 1.0
+    zero_wmape = wmape(zero["actual"], zero["forecast"]) if len(zero) else float("nan")
+
+    # The bar Phase 3 must clear is whichever is HARDER: the fitted floor, or doing
+    # nothing. On the intermittent datasets the fitted floor scores worse than zero,
+    # so beating the baseline there is not evidence of a useful model -- the zero
+    # forecast is. Taking the min keeps the bar honest in both regimes.
+    bar = overall if np.isnan(zero_wmape) else min(overall, zero_wmape)
 
     # "full" only when we can prove it: n_full present AND equal to len(ids).
     # A missing n_full labels the dataset "sample" -- never silently overclaim
@@ -134,11 +170,15 @@ def evaluate_dataset(label: str, meta: dict, table: pd.DataFrame, thr: Threshold
         "wmape_overall": round(overall, 4),
         "wmape_l2_subset": round(l2_wmape, 4),
         "wmape_naive_modelable": round(naive_l2, 4),
+        "wmape_zero": round(zero_wmape, 4),
+        "phase3_bar": round(bar, 4),
+        "baseline_beats_zero": bool(overall < zero_wmape),
         "l2_indicative": bool(res["n_l2"] < INDICATIVE_N_L2),
         "routing": {"l2": res["n_l2"], "floor": res["n_b2"]},
         "config": {"alpha": res["config"].alpha, "transform": res["config"].transform},
         "wmape_by_sb_class": {k: round(v["wmape"], 4) for k, v in by_class.items()},
         "wmape_by_fold": _wmape_by_fold(base),
+        "transform_diagnostics": _transform_diagnostics(res["trials"]),
         "leakage_check_pass": leakage_check(long),
         "trials": res["trials"],
     }
@@ -175,6 +215,9 @@ def main() -> None:
         ind = "  (indicative, low n)" if r["l2_indicative"] else ""
         print(f"  L2 vs naive    : L2={r['wmape_l2_subset']:.4f}  naive={r['wmape_naive_modelable']:.4f}"
               f"  (modelable series only){ind}")
+        verdict = "baseline" if r["baseline_beats_zero"] else "ZERO WINS"
+        print(f"  vs zero        : zero={r['wmape_zero']:.4f}  -> {verdict}")
+        print(f"  PHASE 3 BAR    : {r['phase3_bar']:.4f}   (min of baseline and zero)")
         print(f"  routing        : L2={r['routing']['l2']}  floor={r['routing']['floor']}")
         print(f"  config         : alpha={r['config']['alpha']}  target={r['config']['transform']}")
         print(f"  by SB class    : "

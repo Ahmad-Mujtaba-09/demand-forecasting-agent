@@ -17,7 +17,7 @@ retailer's data. Generality here is a design property argued for, not a set of f
 built — there are deliberately no format converters or column auto-detection.
 
 > **Status:** Phase 1 (EDA & dataset selection) and Phase 2 (L2 baseline) complete. ML core in progress.
-> **94 tests passing.** · Validated on M5 (30,490 store-item series).
+> **96 tests passing.** · Validated on M5 (30,490 store-item series).
 
 ---
 
@@ -139,20 +139,24 @@ under [`src/dfa/`](src/dfa/):
 | [`metrics.py`](src/dfa/metrics.py) | **WMAPE** — volume-weighted, sum-then-divide (`Σ\|a−f\| / Σa`), robust on zero-heavy series; per-group and volume-tercile breakdowns. WRMSSE rejected (re-imports the squared-error sensitivity Tweedie avoids). |
 | [`splits.py`](src/dfa/splits.py) | **Rolling-origin** (expanding-window) folds, horizon 28, never shuffled. Fold count is **data-driven** — `min(5, (train_end − 365) // horizon)` — with a min-history guard that raises rather than train on a thin window. |
 | [`features.py`](src/dfa/features.py) | The **frozen feature set** (carried unchanged into Phase 3): calendar one-hots (fixed weekday/month; event types **extracted from the calendar** for both slots; SNAP resolved per-row by state), trailing-only price fill, lags 28/35/42, rolling means. Every dynamic feature is lagged **≥ horizon** → direct multi-horizon, leakage-safe by construction. |
-| [`baseline.py`](src/dfa/baseline.py) | Pooled **Ridge** per dataset (α + raw/log1p tuned on the CV), non-negativity clamp, **B2 → mean-of-history floor** (sparse series aren't given to L2), and a naive comparator scored on the modelable series only. |
+| [`baseline.py`](src/dfa/baseline.py) | Pooled **Ridge** per dataset (α + raw/log1p tuned on the CV), non-negativity clamp, **B2 → mean-of-history floor** (sparse series aren't given to L2), and two comparators: a naive mean scored on the modelable series only, and an all-zero "predict nothing" forecast (identically 1.0 under WMAPE) that sets the real bar on the intermittent datasets. |
 | [`run_baseline.py`](src/dfa/run_baseline.py) | Runs the baseline across A/B/C; the true last usable day is derived from the data (`last_sales_day() − horizon`). Emits WMAPE overall + by SB class + (A only) by volume tercile, per-fold spread, routing, and an empirical leakage check. |
 
 ### Baseline results (5-fold rolling-origin CV, WMAPE)
 
-| Dataset | Cell | n | Sample/Full | **WMAPE (floor)** | L2 vs naive (modelable) | Config |
-|---|---|---|---|---|---|---|
-| **A** — dense | `CA_3 × FOODS_3` | 250 | sample | **0.621** | 0.621 vs 0.732 | Ridge α=1000, raw |
-| **B** — intermittent | `CA_2 × HOUSEHOLD_2` | 250 | sample | **1.106** | 1.092 vs 1.207 | Ridge α=0.1, log1p |
-| **C** — slow / sparse | `CA_4 × HOBBIES_2` | 149 | **full** | **1.631** | 1.401 vs 1.669 *(indicative, low n)* | Ridge α=10, log1p |
+| Dataset | Cell | n | Sample/Full | WMAPE (floor) | L2 vs naive (modelable) | Zero | **Phase 3 bar** | Config |
+|---|---|---|---|---|---|---|---|---|
+| **A** — dense | `CA_3 × FOODS_3` | 250 | sample | 0.621 | 0.620 vs 0.732 | 1.000 | **0.621** | Ridge α=1e4, raw |
+| **B** — intermittent | `CA_2 × HOUSEHOLD_2` | 250 | sample | 1.106 | 1.092 vs 1.207 | 1.000 | **1.000** | Ridge α=0.01, log1p |
+| **C** — slow / sparse | `CA_4 × HOBBIES_2` | 149 | **full** | 1.631 | 1.401 vs 1.669 *(indicative, low n)* | 1.000 | **1.000** | Ridge α=10, log1p |
 
-- **L2 beats a constant mean on every dataset's modelable series** — a real floor, not a
-  strawman. WMAPE climbs A→B→C, tracking intermittency; > 1 on B/C is expected for
-  zero-heavy L2 and is exactly the gap Tweedie should close in Phase 3.
+- **The bar for Phase 3 is `min(baseline, 1.0)`.** A zero forecast scores exactly 1.0 under
+  sum-then-divide WMAPE, so on **B and C the baseline loses to predicting nothing** and the
+  bar is 1.000, not the fitted floor. Only **A** (0.621) sets a bar of its own.
+- **L2 beats a constant mean on every dataset's modelable series** — so the Ridge does real
+  work and is not a strawman for the mean — **though on B and C neither beats a zero
+  forecast.** WMAPE climbs A→B→C, tracking intermittency; that B/C sit above 1.0 is exactly
+  the gap Tweedie has to close in Phase 3, now expressed as a pass/fail line.
 - **C is the sparse-fallback showcase:** 118 of 149 series route to the mean floor; its
   31-series L2 number is tagged *indicative* (high-variance, not a stable floor).
 - Per-class and (A-only) volume-tercile breakdowns confirm the aggregate is carried by the
@@ -160,6 +164,19 @@ under [`src/dfa/`](src/dfa/):
 - **Leakage check passes** on all three: perturbing future units changes features only
   at/after `origin + horizon`, never before. Full write-up:
   [`docs/results/02_phase2_baseline_results.md`](docs/results/02_phase2_baseline_results.md).
+
+### 📊 Phase 2 review artifact
+
+Same treatment as Phase 1 — every comparator charted against the 1.000 rule, plus the
+per-class, per-fold, transform-bias and routing views, and a full table view:
+
+➡️ **[`artifacts/phase2_review_standalone.html`](artifacts/phase2_review_standalone.html)**
+— double-click to open in any browser (self-contained, follows your light/dark theme).
+Plain-text twin: [`docs/artifacts/phase2_review.md`](docs/artifacts/phase2_review.md).
+
+Unlike Phase 1's hand-authored page, this one is **generated from the results JSON** by
+[`build_phase2_review.py`](src/dfa/build_phase2_review.py), so the charts cannot drift
+from the run that produced them.
 
 ---
 
@@ -202,10 +219,11 @@ demand_forecasting_agent/
 │   │   ├── 00_master_plan.md       # overarching plan, all phases
 │   │   ├── 01_phase1_eda_plan.md   # Phase 1 sub-plan
 │   │   └── 02_phase2_baseline_plan.md
-│   └── results/
-│       └── 02_phase2_baseline_results.md
+│   ├── results/
+│   │   └── 02_phase2_baseline_results.md
+│   └── artifacts/                   # phase1_review.md, phase2_review.md
 ├── src/dfa/                        # ML core (Phases 1–3)
-├── tests/                          # one suite per module (94 tests)
+├── tests/                          # one suite per module (96 tests)
 └── artifacts/                      # signal table, selection, thresholds, review, baseline results
 ```
 
@@ -231,10 +249,11 @@ python -m dfa.select_datasets         # -> artifacts/datasets/selection.json
 python -m dfa.calibrate_thresholds    # -> artifacts/thresholds.json
 
 # 4. run the Phase 2 baseline across A/B/C
-python -m dfa.run_baseline            # -> artifacts/phase2_baseline_results.json  (~1 min)
+python -m dfa.run_baseline            # -> artifacts/phase2_baseline_results.json  (~2 min)
+python -m dfa.build_phase2_review     # -> artifacts/phase2_review_standalone.html
 
 # 5. tests
-pytest                                # 94 passing
+pytest                                # 96 passing
 ```
 
 `pyproject.toml` puts `src/` on the path for pytest automatically; the `PYTHONPATH=src`

@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 2 Review — Baseline & the Bar</title>
+<style>
+  *{margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  img,svg{max-width:100%}
+  a{color:inherit}
+</style>
+</head>
+<body>
+<style>
+  :root{
+    --bg:#f6f7f8; --surface:#ffffff; --surface-2:#fcfcfb;
+    --ink:#171a1f; --secondary:#555c67; --muted:#868d98;
+    --border:#e6e8ec; --grid:#eef0f2; --grid-strong:#dde0e5;
+    --accent:#0e7c86; --accent-ink:#0a5b62; --accent-wash:#e6f2f2;
+    --pA:#2a78d6; --pB:#1baf7a; --pC:#e34948;
+    --bar-rule:#171a1f; --bar-rule-ink:#171a1f;
+    --ok:#0ca30c; --fail:#d03b3b;
+    --shadow:0 1px 2px rgba(20,22,28,.04),0 2px 8px rgba(20,22,28,.05);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:where(:not([data-theme="light"])){
+      --bg:#111317; --surface:#1a1c21; --surface-2:#191b1f;
+      --ink:#f2f3f5; --secondary:#c1c5cc; --muted:#888f99;
+      --border:#2a2d34; --grid:#24272d; --grid-strong:#31353d;
+      --accent:#42b7c0; --accent-ink:#7fd3d9; --accent-wash:#12292b;
+      --pA:#3987e5; --pB:#199e70; --pC:#e66767;
+      --bar-rule:#f2f3f5; --bar-rule-ink:#f2f3f5;
+      --ok:#0ca30c; --fail:#e66767;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 2px 10px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#111317; --surface:#1a1c21; --surface-2:#191b1f;
+    --ink:#f2f3f5; --secondary:#c1c5cc; --muted:#888f99;
+    --border:#2a2d34; --grid:#24272d; --grid-strong:#31353d;
+    --accent:#42b7c0; --accent-ink:#7fd3d9; --accent-wash:#12292b;
+    --pA:#3987e5; --pB:#199e70; --pC:#e66767;
+    --bar-rule:#f2f3f5; --bar-rule-ink:#f2f3f5;
+    --ok:#0ca30c; --fail:#e66767;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased;margin:0}
+  .wrap{max-width:1060px;margin:0 auto;padding:56px 28px 96px}
+  .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.11em;
+    font-weight:650;color:var(--accent-ink)}
+  h1{font-size:2.05rem;font-weight:660;letter-spacing:-.02em;margin:.5rem 0 .3rem;
+    text-wrap:balance;line-height:1.1}
+  .lede{font-size:1.05rem;color:var(--secondary);max-width:68ch;margin:.2rem 0 0}
+  h2{font-size:1.28rem;font-weight:640;letter-spacing:-.01em;margin:0 0 .2rem}
+  .num{font-variant-numeric:tabular-nums;font-family:var(--mono)}
+
+  .metarow{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .chip{font-family:var(--mono);font-size:.78rem;color:var(--secondary);
+    background:var(--surface);border:1px solid var(--border);border-radius:7px;
+    padding:6px 11px}
+  .chip b{color:var(--ink);font-weight:600}
+
+  section{margin-top:52px}
+  .sec-head{margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px}
+
+  /* stat tiles — the bar per dataset */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:17px 18px;box-shadow:var(--shadow);border-top:3px solid var(--pc)}
+  .tile .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--muted);font-weight:640}
+  .tile .cell{font-family:var(--mono);font-size:.82rem;color:var(--secondary);margin-top:3px}
+  .tile .v{font-size:2.3rem;font-weight:660;letter-spacing:-.02em;margin:8px 0 0;
+    line-height:1}
+  .tile .sub{font-size:.83rem;color:var(--secondary);margin-top:7px}
+  .tile .status{display:inline-flex;align-items:center;gap:6px;font-size:.79rem;
+    font-weight:640;margin-top:9px}
+  .tile .status.pass{color:var(--ok)} .tile .status.fail{color:var(--fail)}
+  .tile .status .g{font-family:var(--mono)}
+
+  .findings{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+  .finding{background:var(--surface);border:1px solid var(--border);border-radius:11px;
+    padding:16px 17px;box-shadow:var(--shadow)}
+  .finding .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--muted);font-weight:640;margin-bottom:7px}
+  .finding .v{font-size:.92rem;color:var(--secondary)}
+  .finding .v b{color:var(--ink);font-weight:600}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+    padding:20px 20px 14px;box-shadow:var(--shadow);margin-bottom:22px}
+  .panel h3{font-size:.98rem;font-weight:630;margin:0 0 2px}
+  .panel .cap{font-size:.88rem;color:var(--secondary);margin:0 0 14px;max-width:76ch}
+  .panel .cap .feeds{color:var(--accent-ink);font-weight:600}
+  .duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px}
+  figure{margin:0}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .axis text{fill:var(--muted);font-size:11px;font-family:var(--mono)}
+  .axis line{stroke:var(--grid-strong)}
+  .gridline{stroke:var(--grid);stroke-width:1}
+  .cat{fill:var(--secondary);font-size:11.5px}
+  .val{fill:var(--ink);font-size:11px;font-family:var(--mono);font-weight:600;
+    font-variant-numeric:tabular-nums}
+  /* the zero-forecast rule: a real threshold, so dashed — gridlines stay solid */
+  .rule{stroke:var(--bar-rule);stroke-width:1.5;stroke-dasharray:4 3;opacity:.8}
+  .rule-lbl{fill:var(--bar-rule-ink);font-size:10.5px;font-family:var(--mono);font-weight:650}
+
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:2px 0 10px;font-size:.8rem;
+    color:var(--secondary);font-family:var(--mono)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .legend i.hollow{background:transparent;border:1.5px solid var(--muted)}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:11px;
+    background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:.82rem}
+  thead th{position:sticky;top:0;background:var(--surface);text-align:right;
+    font-family:var(--mono);font-weight:600;color:var(--muted);font-size:.74rem;
+    padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+  thead th:first-child{text-align:left}
+  tbody td{padding:7px 12px;text-align:right;font-family:var(--mono);
+    border-bottom:1px solid var(--grid);white-space:nowrap;font-variant-numeric:tabular-nums}
+  tbody td:first-child{text-align:left}
+  tbody td.bar-col{font-weight:700}
+  tbody tr.fail-row td.bar-col{color:var(--fail)}
+  tbody tr.pass-row td.bar-col{color:var(--ok)}
+  .swatch{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px}
+
+  .note{font-size:.88rem;color:var(--secondary);background:var(--surface);
+    border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:9px;
+    padding:14px 16px;max-width:82ch}
+  .note b{color:var(--ink)}
+  .decisions{display:grid;gap:12px}
+  .decision{background:var(--surface);border:1px solid var(--border);border-radius:11px;
+    padding:15px 17px;box-shadow:var(--shadow)}
+  .decision .q{font-weight:600;font-size:.95rem;margin-bottom:4px}
+  .decision .a{font-size:.88rem;color:var(--secondary)}
+
+  #tt{position:fixed;pointer-events:none;opacity:0;transition:opacity .08s;
+    background:var(--ink);color:var(--bg);font-family:var(--mono);font-size:.75rem;
+    padding:6px 9px;border-radius:6px;z-index:50;white-space:nowrap;
+    box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);
+    font-size:.8rem;color:var(--muted);font-family:var(--mono);line-height:1.9}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Demand-Forecasting Agent · Phase 2 review</div>
+    <h1>Baseline &amp; the bar</h1>
+    <p class="lede">The honest L2 floor for each dataset — and the trivial forecast that
+      replaces it as the target where the floor turns out not to be worth beating. Under
+      volume-weighted WMAPE a <b>zero forecast scores exactly 1.000</b>, so the bar Phase 3
+      must clear is <b>min(baseline, 1.0)</b>. On two of three datasets, the fitted baseline
+      loses to predicting nothing.</p>
+    <div class="metarow" id="meta"></div>
+  </header>
+
+  <section>
+    <div class="sec-head"><h2>The bar for Phase 3</h2>
+      <p class="lede" style="font-size:.92rem;margin-top:6px">One target per dataset. Where
+        the baseline scores worse than the zero forecast, the bar is 1.000 — beating the
+        baseline there would prove nothing a zero-cost constant hasn't already done.</p></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>What the run says</h2></div>
+    <div class="findings" id="findings"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Baseline against both comparators</h2></div>
+
+    <div class="panel">
+      <h3>1 · The headline — every WMAPE against the 1.000 rule</h3>
+      <p class="cap">Baseline (L2 + sparse mean-fallback, all series) against the two
+        comparators. <span class="feeds">The dashed rule is the zero forecast</span> — it is
+        not measured but derived: <span class="num">sum|y−0| / sum(y) ≡ 1</span>. Bars to the
+        right of it are worse than forecasting nothing. Naive and L2 are scored on the
+        modelable (non-B2) series only, so they answer a narrower question than the baseline bar.</p>
+      <div class="legend" id="leg-head"></div>
+      <figure id="c-head"></figure>
+    </div>
+
+    <div class="panel">
+      <h3>2 · By Syntetos–Boylan class — where the aggregate hides</h3>
+      <p class="cap">The honesty check on a volume-weighted headline. <span class="feeds">Every
+        cell at or above the rule is a class the baseline loses to zero on</span> — including
+        <b>A's own intermittent class</b>, which is why A's aggregate pass is carried by its
+        smooth and erratic series rather than earned across the board.</p>
+      <div class="legend" id="leg-sb"></div>
+      <figure id="c-sb"></figure>
+    </div>
+
+    <div class="duo">
+      <div class="panel">
+        <h3>3 · Per-fold stability</h3>
+        <p class="cap">Pooled WMAPE at each rolling origin. <span class="feeds">B and C sit
+          above the rule in all five folds</span> — losing to zero is the stable state, not a
+          one-window artifact.</p>
+        <div class="legend" id="leg-fold"></div>
+        <figure id="c-fold"></figure>
+      </div>
+      <div class="panel">
+        <h3>4 · Dataset A by volume tercile</h3>
+        <p class="cap">A's pass is a high-volume phenomenon: <span class="feeds">its
+          low-volume third is itself above the rule</span>, more than 2× the high third.</p>
+        <figure id="c-terc"></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Why the target transform wins — and what it is really doing</h2>
+      <p class="lede" style="font-size:.92rem;margin-top:6px">Two panels, one axis each
+        (never a shared one — the measures have different units). Read them together: on B and
+        C, <b>log1p wins <i>while</i> badly biased low</b>.</p></div>
+    <div class="duo">
+      <div class="panel">
+        <h3>5 · Best WMAPE per target space</h3>
+        <p class="cap">Best achievable over the whole α grid, on the L2-routed rows.</p>
+        <div class="legend" id="leg-tw"></div>
+        <figure id="c-tw"></figure>
+      </div>
+      <div class="panel">
+        <h3>6 · Forecast bias — sum(forecast) / sum(actual)</h3>
+        <p class="cap">The rule at 1.000 is unbiased. <span class="feeds">log1p on B and C
+          lands far below it</span> — forecasts total ~31% and ~36% under actuals.</p>
+        <div class="legend" id="leg-tb"></div>
+        <figure id="c-tb"></figure>
+      </div>
+    </div>
+    <p class="note" id="mech"></p>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Routing — how many series L2 ever sees</h2></div>
+    <div class="panel">
+      <h3>7 · L2 vs sparse mean-fallback</h3>
+      <p class="cap">Series the deterministic branch logic sends to each path.
+        <span class="feeds">C is the sparse-fallback showcase</span> — 79% of its series are
+        too sparse for L2, which is why its L2 number is tagged indicative rather than read
+        as a floor.</p>
+      <div class="legend" id="leg-route"></div>
+      <figure id="c-route"></figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Table view — every number in this artifact</h2>
+      <p class="lede" style="font-size:.92rem;margin-top:6px">The WCAG-clean twin of the
+        charts above: nothing here is reachable only by hovering or only by colour.</p></div>
+    <div class="tablewrap"><table id="ttable"></table></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Decisions for your review</h2></div>
+    <div class="decisions" id="decisions"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<div id="tt"></div>
+
+<script type="application/json" id="data">{"zeroBar":1.0,"datasets":[{"key":"A","label":"A \u2014 dense","cell":"CA_3 x FOODS_3","n":250,"coverage":"sample","baseline":0.6207,"l2":0.6204,"naive":0.732,"zero":1.0,"bar":0.6207,"beats_zero":true,"indicative":false,"routing":{"l2":248,"floor":2},"alpha":10000.0,"transform":"raw","sb":[{"cls":"smooth","wmape":0.4779},{"cls":"erratic","wmape":0.5484},{"cls":"intermittent","wmape":1.029},{"cls":"lumpy","wmape":0.8692}],"folds":[{"fold":0,"wmape":0.7441},{"fold":1,"wmape":0.629},{"fold":2,"wmape":0.5668},{"fold":3,"wmape":0.6155},{"fold":4,"wmape":0.578}],"terciles":[{"band":"low","wmape":1.1119},{"band":"mid","wmape":0.8843},{"band":"high","wmape":0.5123}],"transforms":[{"name":"raw","wmape":0.6204,"bias":0.9991,"alpha":10000.0,"spread":0.00014},{"name":"log1p","wmape":1.1082,"bias":1.1003,"alpha":0.01,"spread":0.00931}],"leakage":true},{"key":"B","label":"B \u2014 intermittent","cell":"CA_2 x HOUSEHOLD_2","n":250,"coverage":"sample","baseline":1.1055,"l2":1.0916,"naive":1.2067,"zero":1.0,"bar":1.0,"beats_zero":false,"indicative":false,"routing":{"l2":223,"floor":27},"alpha":0.01,"transform":"log1p","sb":[{"cls":"smooth","wmape":0.5825},{"cls":"erratic","wmape":1.1125},{"cls":"intermittent","wmape":1.143},{"cls":"lumpy","wmape":1.0694}],"folds":[{"fold":0,"wmape":1.1219},{"fold":1,"wmape":1.0722},{"fold":2,"wmape":1.1421},{"fold":3,"wmape":1.1545},{"fold":4,"wmape":1.048}],"terciles":null,"transforms":[{"name":"raw","wmape":1.1461,"bias":0.9791,"alpha":100.0,"spread":0.001972},{"name":"log1p","wmape":1.0916,"bias":0.6857,"alpha":0.01,"spread":0.001709}],"leakage":true},{"key":"C","label":"C \u2014 slow/sparse","cell":"CA_4 x HOBBIES_2","n":149,"coverage":"full","baseline":1.6308,"l2":1.4013,"naive":1.6685,"zero":1.0,"bar":1.0,"beats_zero":false,"indicative":true,"routing":{"l2":31,"floor":118},"alpha":10.0,"transform":"log1p","sb":[{"cls":"intermittent","wmape":1.6776},{"cls":"lumpy","wmape":1.4845}],"folds":[{"fold":0,"wmape":1.5103},{"fold":1,"wmape":1.6844},{"fold":2,"wmape":1.6171},{"fold":3,"wmape":1.6832},{"fold":4,"wmape":1.6996}],"terciles":null,"transforms":[{"name":"raw","wmape":1.6446,"bias":1.0381,"alpha":10.0,"spread":0.038266},{"name":"log1p","wmape":1.4013,"bias":0.6451,"alpha":10.0,"spread":0.017867}],"leakage":true}],"nBarsCleared":1}</script>
+<script>
+(function(){
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const NS = 'http://www.w3.org/2000/svg';
+  const tt = document.getElementById('tt');
+  const BAR = D.zeroBar;
+  const COLOR = {A:'var(--pA)', B:'var(--pB)', C:'var(--pC)'};
+  /* Round half-AWAY-from-zero, matching the markdown docs. The results JSON stores
+     values already rounded to 4dp, so displaying 3dp lands exactly on a half-way
+     boundary for some of them (1.1055, 1.4845) -- and there the stored double is a
+     hair BELOW the decimal literal, so plain toFixed rounds it down (1.105, 1.484)
+     while the docs round up (1.106, 1.485). The nudge makes the HTML and the
+     markdown agree; without it the two artifacts disagree in the 3rd decimal, which
+     is precisely the drift this generator exists to prevent. */
+  const fx = (v,n) => {const p=Math.pow(10,n);
+    return (Math.round(Math.abs(v)*p + 1e-6)/p * Math.sign(v||1)).toFixed(n);};
+  const f3 = v => (v==null || Number.isNaN(v)) ? '—' : fx(v,3);
+  const f2 = v => (v==null || Number.isNaN(v)) ? '—' : fx(v,2);
+
+  function el(tag, attrs){const e=document.createElementNS(NS,tag);
+    for(const k in attrs) if(attrs[k]!=null) e.setAttribute(k,attrs[k]); return e;}
+  function showTT(html,ev){tt.innerHTML=html;tt.style.opacity=1;
+    tt.style.left=(ev.clientX+12)+'px';tt.style.top=(ev.clientY+12)+'px';}
+  function hideTT(){tt.style.opacity=0;}
+  function hover(node, html){
+    node.addEventListener('mousemove', e=>showTT(html,e));
+    node.addEventListener('mouseleave', hideTT);
+    node.setAttribute('tabindex','0');
+    node.addEventListener('focus', e=>showTT(html,{clientX:node.getBoundingClientRect().right,
+      clientY:node.getBoundingClientRect().top}));
+    node.addEventListener('blur', hideTT);
+  }
+  function svg(w,h){const s=el('svg',{viewBox:`0 0 ${w} ${h}`,
+    preserveAspectRatio:'xMinYMin meet',role:'img'}); return s;}
+  function legend(id, items){
+    document.getElementById(id).innerHTML = items.map(i =>
+      `<span><i style="background:${i.hollow?'transparent':i.color};${
+        i.hollow?'border:1.5px solid var(--muted);':''}"></i>${i.label}</span>`).join('');
+  }
+
+  // ---------- meta chips ----------
+  const nFail = D.datasets.length - D.nBarsCleared;
+  document.getElementById('meta').innerHTML = [
+    ['metric','WMAPE (sum-then-divide)'],
+    ['holdout','5-fold rolling origin · h=28'],
+    ['datasets', D.datasets.length],
+    ['clear the 1.000 bar', `${D.nBarsCleared} of ${D.datasets.length}`],
+    ['leakage check', D.datasets.every(d=>d.leakage) ? 'PASS' : 'FAIL'],
+  ].map(([k,v])=>`<span class="chip">${k} <b>${v}</b></span>`).join('');
+
+  // ---------- stat tiles ----------
+  document.getElementById('tiles').innerHTML = D.datasets.map(d=>{
+    const pass = d.beats_zero;
+    return `<div class="tile" style="--pc:${COLOR[d.key]}">
+      <div class="k">${d.label}</div>
+      <div class="cell">${d.cell} · n=${d.n} · ${d.coverage}</div>
+      <div class="v">${f3(d.bar)}</div>
+      <div class="sub">Phase 3 bar &nbsp;=&nbsp; min(baseline ${f3(d.baseline)}, zero ${f3(d.zero)})</div>
+      <div class="status ${pass?'pass':'fail'}"><span class="g">${pass?'✓':'✗'}</span>
+        ${pass ? 'baseline clears the zero forecast' : 'baseline loses to the zero forecast'}</div>
+    </div>`;}).join('');
+
+  // ---------- findings ----------
+  const bad = D.datasets.filter(d=>!d.beats_zero).map(d=>d.key).join(' and ');
+  const good = D.datasets.filter(d=>d.beats_zero).map(d=>d.key).join(', ');
+  document.getElementById('findings').innerHTML = [
+    ['The zero forecast is an identity, not a result',
+     `Under sum-then-divide WMAPE a forecast of all zeros scores <b>exactly 1.000</b> on any
+      row set with positive volume. It costs no fitting, so <b>"WMAPE &gt; 1" means "worse
+      than predicting nothing"</b> — which is the state of ${bad}.`],
+    ['L2 beats the constant mean everywhere — and it still is not enough',
+     `The Ridge beats a mean-of-history constant on the modelable series of <b>all three</b>
+      datasets, so it is doing real work and is not a strawman. But on ${bad}
+      <b>neither beats zero</b>, so that work does not yet buy anything.`],
+    ['Only A sets a bar of its own',
+     `<b>${good}</b> clears the rule at ${f3(D.datasets.find(d=>d.beats_zero).baseline)},
+      a genuine target. For ${bad} the bar is the flat <b>1.000</b>.`],
+    ['α is immaterial; the transform is everything',
+     `Across a six-order-of-magnitude α grid the WMAPE spread inside the winning transform is
+      ${D.datasets.map(d=>{const t=d.transforms.find(x=>x.name===d.transform);
+        return `<b>${t?t.spread.toFixed(5):'—'}</b> (${d.key})`;}).join(', ')}.
+      Selection happens at the 4th–5th decimal — read no story into the chosen α.`],
+  ].map(([k,v])=>`<div class="finding"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+
+  /* ---------- generic horizontal grouped bars, with the 1.000 rule ----------
+     Horizontal so category names read without rotation and every bar can carry a
+     direct value label at its tip — the label is required, not decorative: it is
+     the secondary encoding the palette's CVD floor depends on, and the contrast
+     relief for the light-mode green. */
+  function hbars(mount, groups, opts){
+    const o = Object.assign({w:760, rowH:26, gap:2, groupGap:12, padL:150, padR:64,
+      padT:24, padB:34, glH:16, max:null, rule:BAR, ruleLabel:'zero forecast 1.000',
+      fmt:f3, unit:''}, opts||{});
+    const nBars = groups.reduce((a,g)=>a+g.bars.length,0);
+    // each group gets its own label band above its bars, so the group name can never
+    // collide with the right-aligned category labels sharing the first bar's row
+    const h = o.padT + groups.length*o.glH + nBars*o.rowH
+      + (groups.length-1)*o.groupGap + o.padB;
+    const plotW = o.w - o.padL - o.padR;
+    const maxV = o.max != null ? o.max :
+      Math.max((o.rule||0)*1.15, ...groups.flatMap(g=>g.bars.map(b=>b.value||0)));
+    const x = v => o.padL + (v/maxV)*plotW;
+    const s = svg(o.w,h);
+
+    // gridlines — solid hairlines
+    const ticks = [];
+    const step = maxV > 1.6 ? 0.5 : 0.25;
+    for(let t=0; t<=maxV+1e-9; t+=step) ticks.push(+t.toFixed(2));
+    const gAxis = el('g',{class:'axis'});
+    ticks.forEach(t=>{
+      gAxis.appendChild(el('line',{class:'gridline',x1:x(t),x2:x(t),y1:o.padT,y2:h-o.padB}));
+      const lb=el('text',{x:x(t),y:h-o.padB+16,'text-anchor':'middle'});
+      lb.textContent=o.fmt(t); gAxis.appendChild(lb);
+    });
+    gAxis.appendChild(el('line',{x1:o.padL,x2:o.padL,y1:o.padT,y2:h-o.padB}));
+    s.appendChild(gAxis);
+
+    let y = o.padT;
+    groups.forEach((g,gi)=>{
+      // group label rides its own band above the bars
+      const gl = el('text',{class:'cat', x:0, y:y+11,
+        style:'font-weight:650;fill:var(--ink)'});
+      gl.textContent = g.label; s.appendChild(gl);
+      y += o.glH;
+      g.bars.forEach(b=>{
+        const bh = o.rowH - o.gap;
+        const w = Math.max(0, x(b.value) - o.padL);
+        const r = Math.min(4, w);
+        // 4px rounded data-end, square at the baseline
+        const path = w<=r ? `M${o.padL},${y} h${w} v${bh} h${-w} Z`
+          : `M${o.padL},${y} h${w-r} a${r},${r} 0 0 1 ${r},${r} v${bh-2*r}
+             a${r},${r} 0 0 1 ${-r},${r} h${-(w-r)} Z`;
+        const p = el('path',{d:path.replace(/\s+/g,' '), fill:b.color, opacity:b.dim?0.42:1});
+        hover(p, `<b>${g.label}</b> · ${b.key}<br>${o.fmt(b.value)}${o.unit}${
+          b.note?'<br>'+b.note:''}`);
+        s.appendChild(p);
+        const vt = el('text',{class:'val', x:x(b.value)+7, y:y+bh/2+4});
+        vt.textContent = o.fmt(b.value)+o.unit; s.appendChild(vt);
+        const kt = el('text',{class:'cat', x:o.padL-9, y:y+bh/2+4,'text-anchor':'end'});
+        kt.textContent = b.key; s.appendChild(kt);
+        y += o.rowH;
+      });
+      if(gi<groups.length-1) y += o.groupGap;
+    });
+
+    // the rule — dashed because it IS a threshold (gridlines above stay solid)
+    if(o.rule!=null){
+      s.appendChild(el('line',{class:'rule',x1:x(o.rule),x2:x(o.rule),
+        y1:o.padT-4,y2:h-o.padB+2}));
+      const rl=el('text',{class:'rule-lbl',x:x(o.rule),y:o.padT-9,'text-anchor':'middle'});
+      rl.textContent=o.ruleLabel; s.appendChild(rl);
+    }
+    document.getElementById(mount).appendChild(s);
+  }
+
+  // ---------- 1 · headline ----------
+  legend('leg-head',[
+    {label:'baseline — all series', color:'var(--ink)'},
+    {label:'L2 — modelable only', color:'var(--ink)'},
+    {label:'naive mean — modelable only', color:'var(--ink)'},
+    {label:'colour = dataset (A / B / C)', color:'var(--pA)'},
+  ]);
+  hbars('c-head', D.datasets.map(d=>({label:d.label, bars:[
+    {key:'baseline', value:d.baseline, color:COLOR[d.key]},
+    {key:'L2', value:d.l2, color:COLOR[d.key], dim:true,
+     note:d.indicative?'indicative — low n':null},
+    {key:'naive mean', value:d.naive, color:COLOR[d.key], dim:true},
+  ]})), {max:1.8});
+
+  // ---------- 2 · by SB class ----------
+  legend('leg-sb', D.datasets.map(d=>({label:d.label, color:COLOR[d.key]})));
+  hbars('c-sb', D.datasets.map(d=>({label:d.label,
+    bars:d.sb.map(s=>({key:s.cls, value:s.wmape, color:COLOR[d.key]}))})), {max:1.8});
+
+  // ---------- 3 · per-fold ----------
+  legend('leg-fold', D.datasets.map(d=>({label:d.label, color:COLOR[d.key]})));
+  (function(){
+    const w=430,h=250,padL=42,padR=54,padT=16,pb=34;
+    const s=svg(w,h);
+    const nF=Math.max(...D.datasets.map(d=>d.folds.length));
+    const maxV=1.8, x=i=>padL+(i/(nF-1))*(w-padL-padR), y=v=>h-pb-(v/maxV)*(h-pb-padT);
+    const g=el('g',{class:'axis'});
+    [0,0.5,1.0,1.5].forEach(t=>{
+      g.appendChild(el('line',{class:'gridline',x1:padL,x2:w-padR,y1:y(t),y2:y(t)}));
+      const lb=el('text',{x:padL-8,y:y(t)+4,'text-anchor':'end'});lb.textContent=f2(t);
+      g.appendChild(lb);
+    });
+    for(let i=0;i<nF;i++){const lb=el('text',{x:x(i),y:h-pb+16,'text-anchor':'middle'});
+      lb.textContent='f'+i; g.appendChild(lb);}
+    s.appendChild(g);
+    s.appendChild(el('line',{class:'rule',x1:padL,x2:w-padR,y1:y(BAR),y2:y(BAR)}));
+    const rl=el('text',{class:'rule-lbl',x:w-padR+4,y:y(BAR)+4});rl.textContent='1.000';
+    s.appendChild(rl);
+    D.datasets.forEach(d=>{
+      const pts=d.folds.map((f,i)=>[x(i),y(f.wmape)]);
+      s.appendChild(el('path',{d:'M'+pts.map(p=>p.join(',')).join(' L '),fill:'none',
+        stroke:COLOR[d.key],'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+      d.folds.forEach((f,i)=>{
+        const c=el('circle',{cx:x(i),cy:y(f.wmape),r:4,fill:COLOR[d.key],
+          stroke:'var(--surface)','stroke-width':2});
+        hover(c,`<b>${d.label}</b> · fold ${i}<br>${f3(f.wmape)}`);
+        s.appendChild(c);
+      });
+      // direct end-label — series separate cleanly at the right edge
+      const last=d.folds[d.folds.length-1];
+      const t=el('text',{class:'val',x:x(nF-1)+9,y:y(last.wmape)+4});
+      t.textContent=d.key; s.appendChild(t);
+    });
+    document.getElementById('c-fold').appendChild(s);
+  })();
+
+  // ---------- 4 · A volume terciles ----------
+  (function(){
+    const a=D.datasets.find(d=>d.terciles);
+    if(!a){document.getElementById('c-terc').innerHTML=''; return;}
+    hbars('c-terc',[{label:a.label+' · volume tercile',
+      bars:a.terciles.map(t=>({key:t.band, value:t.wmape, color:COLOR[a.key]}))}],
+      {w:430, padL:96, padR:56, max:1.8});
+  })();
+
+  // ---------- 5/6 · transform diagnostics ----------
+  legend('leg-tw', D.datasets.map(d=>({label:d.label, color:COLOR[d.key]})));
+  legend('leg-tb', D.datasets.map(d=>({label:d.label, color:COLOR[d.key]})));
+  hbars('c-tw', D.datasets.map(d=>({label:d.label,
+    bars:d.transforms.map(t=>({key:t.name, value:t.wmape, color:COLOR[d.key],
+      dim:t.name!==d.transform, note:t.name===d.transform?'chosen':null}))})),
+    {w:430, padL:104, padR:56, max:1.8});
+  hbars('c-tb', D.datasets.map(d=>({label:d.label,
+    bars:d.transforms.map(t=>({key:t.name, value:t.bias, color:COLOR[d.key],
+      dim:t.name!==d.transform, note:t.name===d.transform?'chosen':null}))})),
+    {w:430, padL:104, padR:56, max:1.4, rule:1.0, ruleLabel:'unbiased 1.000', fmt:f2});
+
+  document.getElementById('mech').innerHTML =
+    `<b>The mechanism differs by dataset, and the doc says so.</b> On B and C, fitting on
+     <span class="num">log1p</span> and inverting with <span class="num">expm1</span> is biased
+     low by Jensen's inequality, and here severely so — it drags forecasts toward zero, and
+     <i>zero is near-optimal on these datasets</i>, so the transform is rewarded. That is
+     <b>an approximation of the trivial forecast, not a better model</b>, which is exactly why
+     both still land above 1.000. On <b>A the sign flips</b>: log1p <i>over</i>predicts
+     (bias ${f2((D.datasets[0].transforms.find(t=>t.name==='log1p')||{}).bias)}), so
+     retransformation bias is not what costs it — fitting in log space stops the high-volume
+     series from dominating the loss while they still dominate WMAPE's volume-weighted
+     denominator.`;
+
+  // ---------- 7 · routing ----------
+  legend('leg-route',[{label:'→ L2 (modelable)',color:'var(--pA)'},
+    {label:'→ sparse mean-fallback',color:'var(--pA)',hollow:true}]);
+  (function(){
+    const w=760,padL=150,padR=64,rowH=30,padT=10,padB=32;
+    const groups=D.datasets;
+    const h=padT+groups.length*rowH+padB, plotW=w-padL-padR;
+    const maxN=Math.max(...groups.map(d=>d.n));
+    const s=svg(w,h);
+    const g=el('g',{class:'axis'});
+    [0,50,100,150,200,250].filter(t=>t<=maxN).forEach(t=>{
+      const xx=padL+(t/maxN)*plotW;
+      g.appendChild(el('line',{class:'gridline',x1:xx,x2:xx,y1:padT,y2:h-padB}));
+      const lb=el('text',{x:xx,y:h-padB+16,'text-anchor':'middle'});lb.textContent=t;
+      g.appendChild(lb);
+    });
+    s.appendChild(g);
+    groups.forEach((d,i)=>{
+      const y=padT+i*rowH, bh=rowH-8;
+      const wl=(d.routing.l2/maxN)*plotW, wf=(d.routing.floor/maxN)*plotW;
+      // 2px surface gap between the two segments — no borders
+      const a=el('rect',{x:padL,y,width:Math.max(0,wl-2),height:bh,rx:3,fill:COLOR[d.key]});
+      hover(a,`<b>${d.label}</b><br>→ L2: ${d.routing.l2} series`);
+      s.appendChild(a);
+      const b=el('rect',{x:padL+wl,y,width:Math.max(0,wf),height:bh,rx:3,
+        fill:COLOR[d.key],opacity:0.22,stroke:COLOR[d.key],'stroke-width':1,
+        'stroke-dasharray':'3 2'});
+      hover(b,`<b>${d.label}</b><br>→ mean floor: ${d.routing.floor} series`);
+      s.appendChild(b);
+      const kt=el('text',{class:'cat',x:padL-9,y:y+bh/2+4,'text-anchor':'end',
+        style:'fill:var(--ink);font-weight:650'});
+      kt.textContent=d.label; s.appendChild(kt);
+      const vt=el('text',{class:'val',x:padL+wl+wf+7,y:y+bh/2+4});
+      vt.textContent=`${d.routing.l2} / ${d.routing.floor}`; s.appendChild(vt);
+    });
+    document.getElementById('c-route').appendChild(s);
+  })();
+
+  // ---------- table view ----------
+  (function(){
+    const cols=[['dataset',''],['cell',''],['n',''],['cov','coverage'],
+      ['baseline',''],['L2',''],['naive',''],['zero',''],['BAR','phase 3 bar'],
+      ['α',''],['target',''],['→L2',''],['→floor','']];
+    const head='<thead><tr>'+cols.map(c=>`<th>${c[0]}</th>`).join('')+'</tr></thead>';
+    const body='<tbody>'+D.datasets.map(d=>{
+      const cls=d.beats_zero?'pass-row':'fail-row';
+      return `<tr class="${cls}">
+        <td><span class="swatch" style="background:${COLOR[d.key]}"></span>${d.label}</td>
+        <td>${d.cell}</td><td>${d.n}</td><td>${d.coverage}</td>
+        <td>${f3(d.baseline)}</td>
+        <td>${f3(d.l2)}${d.indicative?' *':''}</td>
+        <td>${f3(d.naive)}</td><td>${f3(d.zero)}</td>
+        <td class="bar-col">${f3(d.bar)}</td>
+        <td>${d.alpha}</td><td>${d.transform}</td>
+        <td>${d.routing.l2}</td><td>${d.routing.floor}</td></tr>`;}).join('')+'</tbody>';
+    document.getElementById('ttable').innerHTML=head+body;
+  })();
+
+  // ---------- decisions ----------
+  document.getElementById('decisions').innerHTML=[
+    ['1 · Adopt min(baseline, 1.0) as the Phase 3 bar.',
+     `It is already computed per dataset (<span class="num">phase3_bar</span> in the results
+      JSON). The consequence is that on B and C a Phase 3 model must reach <b>WMAPE &lt; 1.000</b>
+      to count as useful at all — a materially harder target than beating
+      ${D.datasets.filter(d=>!d.beats_zero).map(d=>f3(d.baseline)).join(' / ')}.`],
+    ['2 · A/B are 250-series samples, not full cells.',
+     `C is the full cell (149). If Phase 3 is to be compared like-for-like, either hold the
+      same sample or re-run Phase 2 at full cell size first — mixing the two makes the
+      bake-off unfalsifiable.`],
+    ['3 · C\'s L2 number stays tagged indicative.',
+     `Only ${D.datasets.find(d=>d.key==='C').routing.l2} of
+      ${D.datasets.find(d=>d.key==='C').n} series ever reach L2. Read C as a demonstration
+      that the sparse fallback fires correctly, not as a floor.`],
+  ].map(([q,a])=>`<div class="decision"><div class="q">${q}</div><div class="a">${a}</div></div>`).join('');
+
+  document.getElementById('foot').innerHTML=
+    `Generated from <b>artifacts/phase2_baseline_results.json</b> by
+     <b>src/dfa/build_phase2_review.py</b> — the charts cannot drift from the run.<br>
+     Reproduce: <b>PYTHONPATH=src python -m dfa.run_baseline &amp;&amp;
+     PYTHONPATH=src python -m dfa.build_phase2_review</b><br>
+     Leakage check ${D.datasets.every(d=>d.leakage)?'PASS':'FAIL'} on all datasets ·
+     * L2 number tagged indicative (low n)`;
+})();
+</script>
+
+</body>
+</html>

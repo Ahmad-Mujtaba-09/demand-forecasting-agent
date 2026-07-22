@@ -24,6 +24,11 @@ with its prior stated in the sub-plan:
   scored on exactly those series. Including B2 series would be a built-in tie
   (their baseline forecast *is* the mean), diluting the only comparison that
   matters.
+- **Zero comparator (all series).** An all-zero "predict nothing" forecast, scored
+  on the same rows as the baseline. It costs nothing to produce and is the true
+  trivial baseline for intermittent demand; under sum-then-divide WMAPE it is
+  identically 1.0, so it is the line that decides whether a fitted floor is useful
+  at all. See `_zero_predictions`.
 
 Hyperparameter selection reports on the same folds it tunes on, mild optimism, 
 but Phase 3's challenger is tuned by the identical protocol on the same folds, 
@@ -44,7 +49,7 @@ from . import features as ft
 from .metrics import wmape
 from .splits import Fold
 
-ALPHA_GRID: tuple[float, ...] = (0.1, 1.0, 10.0, 100.0, 1000.0)
+ALPHA_GRID: tuple[float, ...] = (0.01, 0.1, 1.0, 10.0, 100.0, 1_000.0, 10_000.0)
 TRANSFORMS: tuple[str, ...] = ("raw", "log1p")
 
 
@@ -143,6 +148,39 @@ def _floor_predictions(
     return pd.concat(out, ignore_index=True).rename(columns={"units": "actual"})
 
 
+def _zero_predictions(
+    feat: pd.DataFrame, folds: list[Fold], ids: set[str] | None = None
+) -> pd.DataFrame:
+    """Per-fold all-zero forecast -- the trivial "predict nothing" comparator.
+
+    Free (no fitting) and the true trivial baseline for intermittent demand. Under
+    sum-then-divide WMAPE a zero forecast scores
+
+        sum|y - 0| / sum(y)  ==  1.0
+
+    EXACTLY, on any row set with positive volume (demand is non-negative, so the
+    numerator and denominator are the same sum). So this is not an empirical
+    finding that happens to land near 1 -- it is an identity, and it is what makes
+    "WMAPE > 1" literally mean *worse than forecasting nothing at all*. That makes
+    1.0 the real bar on the intermittent datasets, not the fitted floor.
+
+    Computed on the same val rows as the baseline rather than hardcoded, so each
+    run re-derives the 1.0; a deviation would signal a bug in the row predicate or
+    the WMAPE denominator.
+    """
+    out = []
+    for fold in folds:
+        val = _val_rows(feat, fold)
+        val = val[val["id"].isin(ids)] if ids is not None else val
+        if val.empty:
+            continue
+        val = val.assign(forecast=0.0, fold=fold.index, method="zero")
+        out.append(val[["id", "day_idx", "units", "forecast", "fold", "method"]])
+    if not out:
+        return pd.DataFrame(columns=["id", "day_idx", "units", "forecast", "fold", "method"])
+    return pd.concat(out, ignore_index=True).rename(columns={"units": "actual"})
+
+
 def select_config(
     feat: pd.DataFrame, folds: list[Fold], b2_ids: set[str]
 ) -> tuple[BaselineConfig, list[dict]]:
@@ -160,7 +198,15 @@ def select_config(
             cfg = BaselineConfig(alpha=alpha, transform=transform)
             pred = _l2_predictions(feat, folds, b2_ids, cfg)
             score = wmape(pred["actual"], pred["forecast"]) if len(pred) else float("nan")
-            trials.append({"alpha": alpha, "transform": transform, "wmape": score})
+            # sum(forecast)/sum(actual) -- the retransformation-bias diagnostic.
+            # log1p+expm1 is biased low by Jensen (expm1(E[log1p y]) <= E[y]); on the
+            # intermittent datasets that bias is what makes log1p *win*, by dragging
+            # predictions toward zero. Recorded per trial (free -- the fit already
+            # happened) so the mechanism is an artifact, not an assertion in prose.
+            bias = (float(pred["forecast"].sum() / pred["actual"].sum())
+                    if len(pred) and pred["actual"].sum() > 0 else float("nan"))
+            trials.append({"alpha": alpha, "transform": transform,
+                           "wmape": score, "bias": bias})
     best = min(trials, key=lambda t: (np.isnan(t["wmape"]), t["wmape"]))
     return BaselineConfig(alpha=best["alpha"], transform=best["transform"]), trials
 
@@ -168,12 +214,21 @@ def select_config(
 def run_baseline(
     feat: pd.DataFrame, folds: list[Fold], b2_ids: set[str]
 ) -> dict:
-    """Full baseline for one dataset: tuned L2 (+ B2 floor) and the naive comparator.
+    """Full baseline for one dataset: tuned L2 (+ B2 floor) and both comparators.
 
-    Returns the chosen config, the tuning trials, and two prediction frames
-    (`baseline` = L2 for modelable + floor for B2; `naive` = constant mean for the
-    MODELABLE series only, the honest "does L2 beat a constant" comparator), each
-    with columns [id, day_idx, actual, forecast, fold, method].
+    Returns the chosen config, the tuning trials, and three prediction frames, each
+    with columns [id, day_idx, actual, forecast, fold, method]:
+
+      - `baseline` -- L2 for modelable + mean floor for B2 (the system under test)
+      - `naive`    -- constant mean, MODELABLE series only ("does L2 beat a constant?")
+      - `zero`     -- all-zero forecast, ALL series ("is any of this useful at all?")
+
+    The two comparators answer different questions and are deliberately scored on
+    different row sets: `naive` on the series L2 is applied to (including B2 would
+    be a built-in tie), `zero` on the same rows as `baseline` so it is directly
+    comparable to the headline floor. The zero frame is scale-free anyway -- it is
+    1.0 on any subset -- so the differing denominators do not make them
+    inconsistent.
     """
     all_ids = set(feat["id"].unique())
     b2_ids = b2_ids & all_ids
@@ -185,12 +240,15 @@ def run_baseline(
     baseline = pd.concat([l2, floor], ignore_index=True)
     # comparator on the same series L2 is applied to -- not B2 (that would be a tie)
     naive = _floor_predictions(feat, folds, modelable_ids, method="naive")
+    # trivial "predict nothing" anchor, on the same rows as `baseline`
+    zero = _zero_predictions(feat, folds)
 
     return {
         "config": cfg,
         "trials": trials,
         "baseline": baseline,
         "naive": naive,
+        "zero": zero,
         "n_b2": len(b2_ids),
         "n_l2": len(all_ids - b2_ids),
     }

@@ -10,6 +10,7 @@ from dfa import baseline as bl
 from dfa import features as ft
 from dfa import splits
 from dfa import config
+from dfa.metrics import wmape
 
 
 def _multi_series_long(series: dict[str, np.ndarray], state="CA"):
@@ -134,3 +135,38 @@ def test_all_sparse_dataset_skips_l2_gracefully():
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+def test_zero_comparator_is_exactly_one_and_covers_all_series():
+    """The zero forecast is an identity, not an estimate: sum|y-0|/sum(y) == 1.
+
+    Pinning it guards the whole reporting chain -- if the val-row predicate or the
+    WMAPE denominator ever drifts apart between the baseline and its comparator,
+    this is the test that catches it, because only a shared denominator makes the
+    zero frame land on exactly 1.0.
+    """
+    rng = np.random.default_rng(7)
+    dense = {f"d{i}": np.tile([8, 2, 2, 2, 2, 5, 9], 62)[:430].astype(int) for i in range(4)}
+    sparse = {"sp1": (rng.random(430) < 0.05).astype(int)}
+    feat = ft.build_features(_multi_series_long({**dense, **sparse}))
+    res = bl.run_baseline(feat, _short_folds(), b2_ids={"sp1"})
+
+    zero, base = res["zero"], res["baseline"]
+    assert (zero["forecast"] == 0).all()
+    assert wmape(zero["actual"], zero["forecast"]) == pytest.approx(1.0)
+    # scored on the SAME rows as the baseline -> the comparison is like-for-like
+    assert len(zero) == len(base)
+    assert set(zero["id"]) == set(base["id"])
+
+
+def test_zero_comparator_is_one_on_any_subset():
+    """Scale-free: the 1.0 holds on any row subset with positive volume, which is
+    why a modelable-only comparison shares the same 1.0 bar as the all-series one."""
+    base = np.tile([8, 2, 2, 2, 2, 5, 9], 62)[:430].astype(int)
+    feat = ft.build_features(_multi_series_long({f"s{i}": base for i in range(3)}))
+    folds = _short_folds()
+    full = bl._zero_predictions(feat, folds)
+    subset = bl._zero_predictions(feat, folds, ids={"s0"})
+    assert wmape(full["actual"], full["forecast"]) == pytest.approx(1.0)
+    assert wmape(subset["actual"], subset["forecast"]) == pytest.approx(1.0)
+    assert 0 < len(subset) < len(full)
