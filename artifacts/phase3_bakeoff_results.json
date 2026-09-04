@@ -1,0 +1,2082 @@
+{
+  "manifest": {
+    "git_sha": "869d560-dirty",
+    "python": "3.12.13",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "pandas": "3.0.3",
+      "numpy": "2.5.1",
+      "pyarrow": "25.0.0",
+      "lightgbm": "4.6.0",
+      "scikit-learn": "1.9.0"
+    },
+    "seed": 20240229,
+    "num_threads": 4,
+    "step": "phase3_bakeoff",
+    "feature_manifest_hash": "447f7447d0e6fb23",
+    "min_cohort_series": 20
+  },
+  "datasets": {
+    "A": {
+      "cell": "CA_3 x FOODS_3",
+      "n_series": 250,
+      "ids_hash": "4e8d9cf828a484c9",
+      "n_modelable": 248,
+      "n_b2": 2,
+      "folds": {
+        "selection": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "held_out": 4
+      },
+      "entrants": {
+        "lgb_l2": {
+          "chosen_config": "lgb_l2[min_data_in_leaf=20,num_leaves=31]",
+          "trials": [
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=20,num_leaves=15]",
+              "pooled": {
+                "wmape": 0.6622,
+                "wmape_h": 0.3827,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.6095,
+                "wmape_h": 0.3453,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6766,
+                "wmape_h": 0.393,
+                "n_rows": 27776
+              },
+              "fit_seconds": 4.6
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=100,num_leaves=15]",
+              "pooled": {
+                "wmape": 0.657,
+                "wmape_h": 0.3782,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5995,
+                "wmape_h": 0.3277,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6727,
+                "wmape_h": 0.392,
+                "n_rows": 27776
+              },
+              "fit_seconds": 6.4
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=20,num_leaves=31]",
+              "pooled": {
+                "wmape": 0.6566,
+                "wmape_h": 0.378,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5982,
+                "wmape_h": 0.3319,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6726,
+                "wmape_h": 0.3907,
+                "n_rows": 27776
+              },
+              "fit_seconds": 6.5
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=100,num_leaves=31]",
+              "pooled": {
+                "wmape": 0.6751,
+                "wmape_h": 0.4008,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.6021,
+                "wmape_h": 0.3381,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6951,
+                "wmape_h": 0.418,
+                "n_rows": 27776
+              },
+              "fit_seconds": 4.8
+            }
+          ],
+          "pooled": {
+            "wmape": 0.6566,
+            "wmape_h": 0.378,
+            "n_rows": 34720
+          },
+          "last_fold": {
+            "wmape": 0.5982,
+            "wmape_h": 0.3319,
+            "n_rows": 6944
+          },
+          "selection": {
+            "wmape": 0.6726,
+            "wmape_h": 0.3907,
+            "n_rows": 27776
+          }
+        },
+        "lgb_poisson": {
+          "chosen_config": "lgb_poisson[min_data_in_leaf=100,num_leaves=15]",
+          "trials": [
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=20,num_leaves=15]",
+              "pooled": {
+                "wmape": 0.6077,
+                "wmape_h": 0.3171,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5585,
+                "wmape_h": 0.285,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6212,
+                "wmape_h": 0.3259,
+                "n_rows": 27776
+              },
+              "fit_seconds": 16.8
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=100,num_leaves=15]",
+              "pooled": {
+                "wmape": 0.6086,
+                "wmape_h": 0.3171,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.559,
+                "wmape_h": 0.2857,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6222,
+                "wmape_h": 0.3258,
+                "n_rows": 27776
+              },
+              "fit_seconds": 17.3
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=20,num_leaves=31]",
+              "pooled": {
+                "wmape": 0.6101,
+                "wmape_h": 0.3211,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5607,
+                "wmape_h": 0.2853,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6236,
+                "wmape_h": 0.3309,
+                "n_rows": 27776
+              },
+              "fit_seconds": 21.2
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=100,num_leaves=31]",
+              "pooled": {
+                "wmape": 0.6131,
+                "wmape_h": 0.3255,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5569,
+                "wmape_h": 0.2815,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6285,
+                "wmape_h": 0.3375,
+                "n_rows": 27776
+              },
+              "fit_seconds": 25.7
+            }
+          ],
+          "pooled": {
+            "wmape": 0.6086,
+            "wmape_h": 0.3171,
+            "n_rows": 34720
+          },
+          "last_fold": {
+            "wmape": 0.559,
+            "wmape_h": 0.2857,
+            "n_rows": 6944
+          },
+          "selection": {
+            "wmape": 0.6222,
+            "wmape_h": 0.3258,
+            "n_rows": 27776
+          }
+        },
+        "lgb_quantile50": {
+          "chosen_config": "lgb_quantile50[min_data_in_leaf=100,num_leaves=31,alpha=0.5]",
+          "trials": [
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=20,num_leaves=15,alpha=0.5]",
+              "pooled": {
+                "wmape": 0.5835,
+                "wmape_h": 0.3478,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5458,
+                "wmape_h": 0.314,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.5938,
+                "wmape_h": 0.357,
+                "n_rows": 27776
+              },
+              "fit_seconds": 23.0
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=100,num_leaves=15,alpha=0.5]",
+              "pooled": {
+                "wmape": 0.5836,
+                "wmape_h": 0.3481,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5458,
+                "wmape_h": 0.314,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.594,
+                "wmape_h": 0.3574,
+                "n_rows": 27776
+              },
+              "fit_seconds": 22.5
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=20,num_leaves=31,alpha=0.5]",
+              "pooled": {
+                "wmape": 0.5896,
+                "wmape_h": 0.355,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5375,
+                "wmape_h": 0.3074,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6039,
+                "wmape_h": 0.368,
+                "n_rows": 27776
+              },
+              "fit_seconds": 12.1
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=100,num_leaves=31,alpha=0.5]",
+              "pooled": {
+                "wmape": 0.5817,
+                "wmape_h": 0.3467,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5401,
+                "wmape_h": 0.3117,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.593,
+                "wmape_h": 0.3562,
+                "n_rows": 27776
+              },
+              "fit_seconds": 18.8
+            }
+          ],
+          "pooled": {
+            "wmape": 0.5817,
+            "wmape_h": 0.3467,
+            "n_rows": 34720
+          },
+          "last_fold": {
+            "wmape": 0.5401,
+            "wmape_h": 0.3117,
+            "n_rows": 6944
+          },
+          "selection": {
+            "wmape": 0.593,
+            "wmape_h": 0.3562,
+            "n_rows": 27776
+          }
+        },
+        "lgb_tweedie": {
+          "chosen_config": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.5]",
+          "trials": [
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 0.6011,
+                "wmape_h": 0.3131,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5546,
+                "wmape_h": 0.2843,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6138,
+                "wmape_h": 0.3209,
+                "n_rows": 27776
+              },
+              "fit_seconds": 24.6
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 0.601,
+                "wmape_h": 0.311,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5584,
+                "wmape_h": 0.2863,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6127,
+                "wmape_h": 0.3177,
+                "n_rows": 27776
+              },
+              "fit_seconds": 21.4
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 0.6041,
+                "wmape_h": 0.3166,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5607,
+                "wmape_h": 0.2845,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.616,
+                "wmape_h": 0.3254,
+                "n_rows": 27776
+              },
+              "fit_seconds": 22.3
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 0.6051,
+                "wmape_h": 0.3162,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5569,
+                "wmape_h": 0.2821,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6183,
+                "wmape_h": 0.3256,
+                "n_rows": 27776
+              },
+              "fit_seconds": 24.3
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 0.5983,
+                "wmape_h": 0.3088,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5515,
+                "wmape_h": 0.2777,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6111,
+                "wmape_h": 0.3173,
+                "n_rows": 27776
+              },
+              "fit_seconds": 22.2
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 0.6014,
+                "wmape_h": 0.3125,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5533,
+                "wmape_h": 0.279,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6146,
+                "wmape_h": 0.3216,
+                "n_rows": 27776
+              },
+              "fit_seconds": 23.3
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 0.6001,
+                "wmape_h": 0.3115,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5644,
+                "wmape_h": 0.2878,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6098,
+                "wmape_h": 0.318,
+                "n_rows": 27776
+              },
+              "fit_seconds": 22.0
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 0.6011,
+                "wmape_h": 0.3111,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.567,
+                "wmape_h": 0.2917,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6104,
+                "wmape_h": 0.3164,
+                "n_rows": 27776
+              },
+              "fit_seconds": 23.4
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 0.5985,
+                "wmape_h": 0.3098,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.55,
+                "wmape_h": 0.2746,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6118,
+                "wmape_h": 0.3195,
+                "n_rows": 27776
+              },
+              "fit_seconds": 20.8
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 0.5973,
+                "wmape_h": 0.3091,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5503,
+                "wmape_h": 0.2748,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6102,
+                "wmape_h": 0.3185,
+                "n_rows": 27776
+              },
+              "fit_seconds": 17.6
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 0.5938,
+                "wmape_h": 0.304,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5532,
+                "wmape_h": 0.2779,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6049,
+                "wmape_h": 0.3112,
+                "n_rows": 27776
+              },
+              "fit_seconds": 14.6
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 0.592,
+                "wmape_h": 0.3015,
+                "n_rows": 34720
+              },
+              "last_fold": {
+                "wmape": 0.5499,
+                "wmape_h": 0.2766,
+                "n_rows": 6944
+              },
+              "selection": {
+                "wmape": 0.6035,
+                "wmape_h": 0.3083,
+                "n_rows": 27776
+              },
+              "fit_seconds": 17.6
+            }
+          ],
+          "pooled": {
+            "wmape": 0.592,
+            "wmape_h": 0.3015,
+            "n_rows": 34720
+          },
+          "last_fold": {
+            "wmape": 0.5499,
+            "wmape_h": 0.2766,
+            "n_rows": 6944
+          },
+          "selection": {
+            "wmape": 0.6035,
+            "wmape_h": 0.3083,
+            "n_rows": 27776
+          }
+        }
+      },
+      "winner": "lgb_tweedie",
+      "winner_config": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.5]",
+      "cohorts": {
+        "standard": {
+          "n_series": 220,
+          "thin": false,
+          "entrants": {
+            "lgb_l2": {
+              "wmape": 0.6346,
+              "wmape_h": 0.362,
+              "n_rows": 30800
+            },
+            "lgb_poisson": {
+              "wmape": 0.596,
+              "wmape_h": 0.3136,
+              "n_rows": 30800
+            },
+            "lgb_quantile50": {
+              "wmape": 0.5748,
+              "wmape_h": 0.3392,
+              "n_rows": 30800
+            },
+            "lgb_tweedie": {
+              "wmape": 0.58,
+              "wmape_h": 0.2988,
+              "n_rows": 30800
+            }
+          }
+        },
+        "B1_tweedie": {
+          "n_series": 28,
+          "thin": false,
+          "entrants": {
+            "lgb_l2": {
+              "wmape": 2.0355,
+              "wmape_h": 1.3852,
+              "n_rows": 3920
+            },
+            "lgb_poisson": {
+              "wmape": 1.4021,
+              "wmape_h": 0.5358,
+              "n_rows": 3920
+            },
+            "lgb_quantile50": {
+              "wmape": 1.0103,
+              "wmape_h": 0.8155,
+              "n_rows": 3920
+            },
+            "lgb_tweedie": {
+              "wmape": 1.341,
+              "wmape_h": 0.4716,
+              "n_rows": 3920
+            }
+          }
+        }
+      },
+      "b2_cohort": {
+        "n_series": 2,
+        "mean_floor": {
+          "wmape": 1.2763,
+          "wmape_h": 0.9719,
+          "n_rows": 280
+        },
+        "sba": {
+          "wmape": 1.2635,
+          "wmape_h": 0.9621,
+          "n_rows": 280
+        },
+        "croston": {
+          "wmape": 1.2773,
+          "wmape_h": 0.967,
+          "n_rows": 280
+        },
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0,
+          "n_rows": 280
+        }
+      },
+      "reference": {
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0,
+          "n_rows": 34720
+        },
+        "oracle_median": 0.4631,
+        "oracle_mean": 0.4901,
+        "mean_oracle_above_zero_line": false
+      },
+      "winner_wmape_by_sb_class": {
+        "intermittent": {
+          "wmape": 1.0366,
+          "n_obs": 13580,
+          "wmape_h": 0.478
+        },
+        "erratic": {
+          "wmape": 0.5315,
+          "n_obs": 4060,
+          "wmape_h": 0.2317
+        },
+        "lumpy": {
+          "wmape": 0.8369,
+          "n_obs": 10220,
+          "wmape_h": 0.4061
+        },
+        "smooth": {
+          "wmape": 0.4383,
+          "n_obs": 6860,
+          "wmape_h": 0.2545
+        }
+      },
+      "winner_wmape_by_fold": {
+        "fold_0": {
+          "wmape": 0.642,
+          "wmape_h": 0.3035,
+          "n_rows": 6944
+        },
+        "fold_1": {
+          "wmape": 0.5977,
+          "wmape_h": 0.3231,
+          "n_rows": 6944
+        },
+        "fold_2": {
+          "wmape": 0.5719,
+          "wmape_h": 0.2893,
+          "n_rows": 6944
+        },
+        "fold_3": {
+          "wmape": 0.6104,
+          "wmape_h": 0.3163,
+          "n_rows": 6944
+        },
+        "fold_4": {
+          "wmape": 0.5499,
+          "wmape_h": 0.2766,
+          "n_rows": 6944
+        }
+      },
+      "leakage_check_pass": true,
+      "critic_violations": {
+        "below_min_forecast": 0,
+        "above_max_median_ratio": 0,
+        "above_max_median_ratio_rate": 0.0
+      },
+      "fit_seconds_total": 433.8
+    },
+    "B": {
+      "cell": "CA_2 x HOUSEHOLD_2",
+      "n_series": 250,
+      "ids_hash": "9dae9d1fdf403cd9",
+      "n_modelable": 223,
+      "n_b2": 27,
+      "folds": {
+        "selection": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "held_out": 4
+      },
+      "entrants": {
+        "lgb_l2": {
+          "chosen_config": "lgb_l2[min_data_in_leaf=100,num_leaves=15]",
+          "trials": [
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=20,num_leaves=15]",
+              "pooled": {
+                "wmape": 1.1737,
+                "wmape_h": 0.3801,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0745,
+                "wmape_h": 0.338,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.2026,
+                "wmape_h": 0.3924,
+                "n_rows": 24976
+              },
+              "fit_seconds": 4.1
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=100,num_leaves=15]",
+              "pooled": {
+                "wmape": 1.1662,
+                "wmape_h": 0.3696,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0771,
+                "wmape_h": 0.3397,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1922,
+                "wmape_h": 0.3783,
+                "n_rows": 24976
+              },
+              "fit_seconds": 5.9
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=20,num_leaves=31]",
+              "pooled": {
+                "wmape": 1.1795,
+                "wmape_h": 0.3864,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.089,
+                "wmape_h": 0.3518,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.206,
+                "wmape_h": 0.3965,
+                "n_rows": 24976
+              },
+              "fit_seconds": 4.1
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=100,num_leaves=31]",
+              "pooled": {
+                "wmape": 1.1737,
+                "wmape_h": 0.3772,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0918,
+                "wmape_h": 0.3544,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1977,
+                "wmape_h": 0.3839,
+                "n_rows": 24976
+              },
+              "fit_seconds": 5.8
+            }
+          ],
+          "pooled": {
+            "wmape": 1.1662,
+            "wmape_h": 0.3696,
+            "n_rows": 31220
+          },
+          "last_fold": {
+            "wmape": 1.0771,
+            "wmape_h": 0.3397,
+            "n_rows": 6244
+          },
+          "selection": {
+            "wmape": 1.1922,
+            "wmape_h": 0.3783,
+            "n_rows": 24976
+          }
+        },
+        "lgb_poisson": {
+          "chosen_config": "lgb_poisson[min_data_in_leaf=20,num_leaves=31]",
+          "trials": [
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=20,num_leaves=15]",
+              "pooled": {
+                "wmape": 1.1452,
+                "wmape_h": 0.3563,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0659,
+                "wmape_h": 0.3331,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1684,
+                "wmape_h": 0.3631,
+                "n_rows": 24976
+              },
+              "fit_seconds": 14.2
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=100,num_leaves=15]",
+              "pooled": {
+                "wmape": 1.1525,
+                "wmape_h": 0.3617,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0754,
+                "wmape_h": 0.339,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1751,
+                "wmape_h": 0.3683,
+                "n_rows": 24976
+              },
+              "fit_seconds": 13.4
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=20,num_leaves=31]",
+              "pooled": {
+                "wmape": 1.1443,
+                "wmape_h": 0.3527,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0682,
+                "wmape_h": 0.3354,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1665,
+                "wmape_h": 0.3577,
+                "n_rows": 24976
+              },
+              "fit_seconds": 14.9
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=100,num_leaves=31]",
+              "pooled": {
+                "wmape": 1.1493,
+                "wmape_h": 0.3621,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0749,
+                "wmape_h": 0.3401,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1711,
+                "wmape_h": 0.3685,
+                "n_rows": 24976
+              },
+              "fit_seconds": 15.4
+            }
+          ],
+          "pooled": {
+            "wmape": 1.1443,
+            "wmape_h": 0.3527,
+            "n_rows": 31220
+          },
+          "last_fold": {
+            "wmape": 1.0682,
+            "wmape_h": 0.3354,
+            "n_rows": 6244
+          },
+          "selection": {
+            "wmape": 1.1665,
+            "wmape_h": 0.3577,
+            "n_rows": 24976
+          }
+        },
+        "lgb_quantile50": {
+          "chosen_config": "lgb_quantile50[min_data_in_leaf=20,num_leaves=15,alpha=0.5]",
+          "trials": [
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=20,num_leaves=15,alpha=0.5]",
+              "pooled": {
+                "wmape": 0.9388,
+                "wmape_h": 0.7114,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 0.9257,
+                "wmape_h": 0.7121,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 0.9426,
+                "wmape_h": 0.7112,
+                "n_rows": 24976
+              },
+              "fit_seconds": 36.0
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=100,num_leaves=15,alpha=0.5]",
+              "pooled": {
+                "wmape": 0.9388,
+                "wmape_h": 0.7114,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 0.9257,
+                "wmape_h": 0.7121,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 0.9426,
+                "wmape_h": 0.7112,
+                "n_rows": 24976
+              },
+              "fit_seconds": 37.3
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=20,num_leaves=31,alpha=0.5]",
+              "pooled": {
+                "wmape": 0.9322,
+                "wmape_h": 0.7484,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 0.925,
+                "wmape_h": 0.7758,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 0.9343,
+                "wmape_h": 0.7404,
+                "n_rows": 24976
+              },
+              "fit_seconds": 44.7
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=100,num_leaves=31,alpha=0.5]",
+              "pooled": {
+                "wmape": 0.9322,
+                "wmape_h": 0.7484,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 0.925,
+                "wmape_h": 0.7758,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 0.9343,
+                "wmape_h": 0.7404,
+                "n_rows": 24976
+              },
+              "fit_seconds": 44.8
+            }
+          ],
+          "pooled": {
+            "wmape": 0.9388,
+            "wmape_h": 0.7114,
+            "n_rows": 31220
+          },
+          "last_fold": {
+            "wmape": 0.9257,
+            "wmape_h": 0.7121,
+            "n_rows": 6244
+          },
+          "selection": {
+            "wmape": 0.9426,
+            "wmape_h": 0.7112,
+            "n_rows": 24976
+          }
+        },
+        "lgb_tweedie": {
+          "chosen_config": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.3]",
+          "trials": [
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 1.1513,
+                "wmape_h": 0.3595,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0656,
+                "wmape_h": 0.3363,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1763,
+                "wmape_h": 0.3663,
+                "n_rows": 24976
+              },
+              "fit_seconds": 9.2
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 1.151,
+                "wmape_h": 0.3626,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0712,
+                "wmape_h": 0.3376,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1743,
+                "wmape_h": 0.3699,
+                "n_rows": 24976
+              },
+              "fit_seconds": 9.7
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 1.1478,
+                "wmape_h": 0.3551,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0698,
+                "wmape_h": 0.3356,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1706,
+                "wmape_h": 0.3608,
+                "n_rows": 24976
+              },
+              "fit_seconds": 10.0
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 1.1426,
+                "wmape_h": 0.3579,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0712,
+                "wmape_h": 0.3367,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1634,
+                "wmape_h": 0.364,
+                "n_rows": 24976
+              },
+              "fit_seconds": 11.5
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 1.1458,
+                "wmape_h": 0.3592,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0649,
+                "wmape_h": 0.3404,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1694,
+                "wmape_h": 0.3647,
+                "n_rows": 24976
+              },
+              "fit_seconds": 11.2
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 1.1494,
+                "wmape_h": 0.3618,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0657,
+                "wmape_h": 0.3415,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1739,
+                "wmape_h": 0.3677,
+                "n_rows": 24976
+              },
+              "fit_seconds": 9.5
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 1.1346,
+                "wmape_h": 0.3475,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0634,
+                "wmape_h": 0.333,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1554,
+                "wmape_h": 0.3518,
+                "n_rows": 24976
+              },
+              "fit_seconds": 13.6
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 1.1433,
+                "wmape_h": 0.3571,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.066,
+                "wmape_h": 0.3355,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1659,
+                "wmape_h": 0.3635,
+                "n_rows": 24976
+              },
+              "fit_seconds": 10.9
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 1.1467,
+                "wmape_h": 0.362,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0647,
+                "wmape_h": 0.3417,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1706,
+                "wmape_h": 0.3679,
+                "n_rows": 24976
+              },
+              "fit_seconds": 10.9
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 1.1435,
+                "wmape_h": 0.3582,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0656,
+                "wmape_h": 0.3426,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1662,
+                "wmape_h": 0.3628,
+                "n_rows": 24976
+              },
+              "fit_seconds": 8.9
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 1.1397,
+                "wmape_h": 0.3519,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0636,
+                "wmape_h": 0.3376,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1619,
+                "wmape_h": 0.356,
+                "n_rows": 24976
+              },
+              "fit_seconds": 9.9
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 1.1433,
+                "wmape_h": 0.3572,
+                "n_rows": 31220
+              },
+              "last_fold": {
+                "wmape": 1.0652,
+                "wmape_h": 0.3401,
+                "n_rows": 6244
+              },
+              "selection": {
+                "wmape": 1.1661,
+                "wmape_h": 0.3622,
+                "n_rows": 24976
+              },
+              "fit_seconds": 9.5
+            }
+          ],
+          "pooled": {
+            "wmape": 1.1346,
+            "wmape_h": 0.3475,
+            "n_rows": 31220
+          },
+          "last_fold": {
+            "wmape": 1.0634,
+            "wmape_h": 0.333,
+            "n_rows": 6244
+          },
+          "selection": {
+            "wmape": 1.1554,
+            "wmape_h": 0.3518,
+            "n_rows": 24976
+          }
+        }
+      },
+      "winner": "lgb_tweedie",
+      "winner_config": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.3]",
+      "cohorts": {
+        "standard": {
+          "n_series": 88,
+          "thin": false,
+          "entrants": {
+            "lgb_l2": {
+              "wmape": 0.9729,
+              "wmape_h": 0.319,
+              "n_rows": 12320
+            },
+            "lgb_poisson": {
+              "wmape": 0.9743,
+              "wmape_h": 0.3146,
+              "n_rows": 12320
+            },
+            "lgb_quantile50": {
+              "wmape": 0.9025,
+              "wmape_h": 0.6144,
+              "n_rows": 12320
+            },
+            "lgb_tweedie": {
+              "wmape": 0.9689,
+              "wmape_h": 0.3084,
+              "n_rows": 12320
+            }
+          }
+        },
+        "B1_tweedie": {
+          "n_series": 135,
+          "thin": false,
+          "entrants": {
+            "lgb_l2": {
+              "wmape": 1.5431,
+              "wmape_h": 0.4683,
+              "n_rows": 18900
+            },
+            "lgb_poisson": {
+              "wmape": 1.4758,
+              "wmape_h": 0.4268,
+              "n_rows": 18900
+            },
+            "lgb_quantile50": {
+              "wmape": 1.0097,
+              "wmape_h": 0.9005,
+              "n_rows": 18900
+            },
+            "lgb_tweedie": {
+              "wmape": 1.4578,
+              "wmape_h": 0.4238,
+              "n_rows": 18900
+            }
+          }
+        }
+      },
+      "b2_cohort": {
+        "n_series": 27,
+        "mean_floor": {
+          "wmape": 1.7329,
+          "wmape_h": 0.7668,
+          "n_rows": 3780
+        },
+        "sba": {
+          "wmape": 1.8389,
+          "wmape_h": 0.7109,
+          "n_rows": 3780
+        },
+        "croston": {
+          "wmape": 1.883,
+          "wmape_h": 0.716,
+          "n_rows": 3780
+        },
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0,
+          "n_rows": 3780
+        }
+      },
+      "reference": {
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0,
+          "n_rows": 31220
+        },
+        "oracle_median": 0.8796,
+        "oracle_mean": 1.078,
+        "mean_oracle_above_zero_line": true
+      },
+      "winner_wmape_by_sb_class": {
+        "intermittent": {
+          "wmape": 1.1859,
+          "n_obs": 28840,
+          "wmape_h": 0.3567
+        },
+        "lumpy": {
+          "wmape": 1.1586,
+          "n_obs": 1960,
+          "wmape_h": 0.3181
+        },
+        "smooth": {
+          "wmape": 0.5356,
+          "n_obs": 280,
+          "wmape_h": 0.1867
+        },
+        "erratic": {
+          "wmape": 0.8419,
+          "n_obs": 140,
+          "wmape_h": 0.4466
+        }
+      },
+      "winner_wmape_by_fold": {
+        "fold_0": {
+          "wmape": 1.1178,
+          "wmape_h": 0.3495,
+          "n_rows": 6244
+        },
+        "fold_1": {
+          "wmape": 1.1158,
+          "wmape_h": 0.3128,
+          "n_rows": 6244
+        },
+        "fold_2": {
+          "wmape": 1.1727,
+          "wmape_h": 0.3713,
+          "n_rows": 6244
+        },
+        "fold_3": {
+          "wmape": 1.218,
+          "wmape_h": 0.3741,
+          "n_rows": 6244
+        },
+        "fold_4": {
+          "wmape": 1.0634,
+          "wmape_h": 0.333,
+          "n_rows": 6244
+        }
+      },
+      "leakage_check_pass": true,
+      "critic_violations": {
+        "below_min_forecast": 0,
+        "above_max_median_ratio": 0,
+        "above_max_median_ratio_rate": 0.0
+      },
+      "fit_seconds_total": 365.4
+    },
+    "C": {
+      "cell": "CA_4 x HOBBIES_2",
+      "n_series": 149,
+      "ids_hash": "a887547de46719bd",
+      "n_modelable": 31,
+      "n_b2": 118,
+      "folds": {
+        "selection": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "held_out": 4
+      },
+      "entrants": {
+        "lgb_l2": {
+          "chosen_config": "lgb_l2[min_data_in_leaf=20,num_leaves=15]",
+          "trials": [
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=20,num_leaves=15]",
+              "pooled": {
+                "wmape": 1.6487,
+                "wmape_h": 0.5005,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7544,
+                "wmape_h": 0.6236,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6274,
+                "wmape_h": 0.4756,
+                "n_rows": 3472
+              },
+              "fit_seconds": 0.9
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=100,num_leaves=15]",
+              "pooled": {
+                "wmape": 1.6485,
+                "wmape_h": 0.5044,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7609,
+                "wmape_h": 0.6317,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6258,
+                "wmape_h": 0.4787,
+                "n_rows": 3472
+              },
+              "fit_seconds": 0.8
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=20,num_leaves=31]",
+              "pooled": {
+                "wmape": 1.6516,
+                "wmape_h": 0.5107,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7486,
+                "wmape_h": 0.6261,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.632,
+                "wmape_h": 0.4874,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.7
+            },
+            {
+              "config_id": "lgb_l2[min_data_in_leaf=100,num_leaves=31]",
+              "pooled": {
+                "wmape": 1.6471,
+                "wmape_h": 0.522,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7525,
+                "wmape_h": 0.6133,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6258,
+                "wmape_h": 0.5035,
+                "n_rows": 3472
+              },
+              "fit_seconds": 3.3
+            }
+          ],
+          "pooled": {
+            "wmape": 1.6487,
+            "wmape_h": 0.5005,
+            "n_rows": 4340
+          },
+          "last_fold": {
+            "wmape": 1.7544,
+            "wmape_h": 0.6236,
+            "n_rows": 868
+          },
+          "selection": {
+            "wmape": 1.6274,
+            "wmape_h": 0.4756,
+            "n_rows": 3472
+          }
+        },
+        "lgb_poisson": {
+          "chosen_config": "lgb_poisson[min_data_in_leaf=100,num_leaves=15]",
+          "trials": [
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=20,num_leaves=15]",
+              "pooled": {
+                "wmape": 1.6422,
+                "wmape_h": 0.4953,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7532,
+                "wmape_h": 0.6168,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6198,
+                "wmape_h": 0.4708,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.7
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=100,num_leaves=15]",
+              "pooled": {
+                "wmape": 1.6402,
+                "wmape_h": 0.4967,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7603,
+                "wmape_h": 0.625,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6159,
+                "wmape_h": 0.4707,
+                "n_rows": 3472
+              },
+              "fit_seconds": 2.2
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=20,num_leaves=31]",
+              "pooled": {
+                "wmape": 1.636,
+                "wmape_h": 0.4954,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7379,
+                "wmape_h": 0.5927,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6154,
+                "wmape_h": 0.4758,
+                "n_rows": 3472
+              },
+              "fit_seconds": 3.2
+            },
+            {
+              "config_id": "lgb_poisson[min_data_in_leaf=100,num_leaves=31]",
+              "pooled": {
+                "wmape": 1.6356,
+                "wmape_h": 0.4958,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7488,
+                "wmape_h": 0.6106,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6128,
+                "wmape_h": 0.4726,
+                "n_rows": 3472
+              },
+              "fit_seconds": 2.1
+            }
+          ],
+          "pooled": {
+            "wmape": 1.6402,
+            "wmape_h": 0.4967,
+            "n_rows": 4340
+          },
+          "last_fold": {
+            "wmape": 1.7603,
+            "wmape_h": 0.625,
+            "n_rows": 868
+          },
+          "selection": {
+            "wmape": 1.6159,
+            "wmape_h": 0.4707,
+            "n_rows": 3472
+          }
+        },
+        "lgb_quantile50": {
+          "chosen_config": "lgb_quantile50[min_data_in_leaf=20,num_leaves=15,alpha=0.5]",
+          "trials": [
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=20,num_leaves=15,alpha=0.5]",
+              "pooled": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 3472
+              },
+              "fit_seconds": 0.5
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=100,num_leaves=15,alpha=0.5]",
+              "pooled": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 3472
+              },
+              "fit_seconds": 0.6
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=20,num_leaves=31,alpha=0.5]",
+              "pooled": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 3472
+              },
+              "fit_seconds": 0.7
+            },
+            {
+              "config_id": "lgb_quantile50[min_data_in_leaf=100,num_leaves=31,alpha=0.5]",
+              "pooled": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.0,
+                "wmape_h": 1.0,
+                "n_rows": 3472
+              },
+              "fit_seconds": 0.7
+            }
+          ],
+          "pooled": {
+            "wmape": 1.0,
+            "wmape_h": 1.0,
+            "n_rows": 4340
+          },
+          "last_fold": {
+            "wmape": 1.0,
+            "wmape_h": 1.0,
+            "n_rows": 868
+          },
+          "selection": {
+            "wmape": 1.0,
+            "wmape_h": 1.0,
+            "n_rows": 3472
+          }
+        },
+        "lgb_tweedie": {
+          "chosen_config": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.1]",
+          "trials": [
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 1.6374,
+                "wmape_h": 0.4948,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7471,
+                "wmape_h": 0.6126,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6152,
+                "wmape_h": 0.471,
+                "n_rows": 3472
+              },
+              "fit_seconds": 2.9
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 1.6353,
+                "wmape_h": 0.4882,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7466,
+                "wmape_h": 0.599,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6128,
+                "wmape_h": 0.4658,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.2
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 1.6274,
+                "wmape_h": 0.4919,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7292,
+                "wmape_h": 0.5837,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6069,
+                "wmape_h": 0.4734,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.4
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.1]",
+              "pooled": {
+                "wmape": 1.6312,
+                "wmape_h": 0.4949,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7447,
+                "wmape_h": 0.6198,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6082,
+                "wmape_h": 0.4696,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.3
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 1.625,
+                "wmape_h": 0.4946,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7367,
+                "wmape_h": 0.6019,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6025,
+                "wmape_h": 0.4729,
+                "n_rows": 3472
+              },
+              "fit_seconds": 2.6
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 1.6313,
+                "wmape_h": 0.4911,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7383,
+                "wmape_h": 0.6016,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6097,
+                "wmape_h": 0.4688,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.8
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 1.6191,
+                "wmape_h": 0.4953,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7356,
+                "wmape_h": 0.6106,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.5955,
+                "wmape_h": 0.472,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.3
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.3]",
+              "pooled": {
+                "wmape": 1.6256,
+                "wmape_h": 0.5016,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7296,
+                "wmape_h": 0.602,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6046,
+                "wmape_h": 0.4813,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.4
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=15,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 1.6219,
+                "wmape_h": 0.4924,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7353,
+                "wmape_h": 0.6075,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.5989,
+                "wmape_h": 0.4691,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.3
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 1.6234,
+                "wmape_h": 0.4926,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.729,
+                "wmape_h": 0.6047,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.6021,
+                "wmape_h": 0.4699,
+                "n_rows": 3472
+              },
+              "fit_seconds": 2.9
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 1.604,
+                "wmape_h": 0.4924,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7274,
+                "wmape_h": 0.5992,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.579,
+                "wmape_h": 0.4709,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.7
+            },
+            {
+              "config_id": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.5]",
+              "pooled": {
+                "wmape": 1.6011,
+                "wmape_h": 0.4955,
+                "n_rows": 4340
+              },
+              "last_fold": {
+                "wmape": 1.7156,
+                "wmape_h": 0.5971,
+                "n_rows": 868
+              },
+              "selection": {
+                "wmape": 1.5779,
+                "wmape_h": 0.4749,
+                "n_rows": 3472
+              },
+              "fit_seconds": 1.4
+            }
+          ],
+          "pooled": {
+            "wmape": 1.6353,
+            "wmape_h": 0.4882,
+            "n_rows": 4340
+          },
+          "last_fold": {
+            "wmape": 1.7466,
+            "wmape_h": 0.599,
+            "n_rows": 868
+          },
+          "selection": {
+            "wmape": 1.6128,
+            "wmape_h": 0.4658,
+            "n_rows": 3472
+          }
+        }
+      },
+      "winner": "lgb_tweedie",
+      "winner_config": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.1]",
+      "cohorts": {
+        "B1_tweedie": {
+          "n_series": 31,
+          "thin": false,
+          "entrants": {
+            "lgb_l2": {
+              "wmape": 1.6487,
+              "wmape_h": 0.5005,
+              "n_rows": 4340
+            },
+            "lgb_poisson": {
+              "wmape": 1.6402,
+              "wmape_h": 0.4967,
+              "n_rows": 4340
+            },
+            "lgb_quantile50": {
+              "wmape": 1.0,
+              "wmape_h": 1.0,
+              "n_rows": 4340
+            },
+            "lgb_tweedie": {
+              "wmape": 1.6353,
+              "wmape_h": 0.4882,
+              "n_rows": 4340
+            }
+          }
+        }
+      },
+      "b2_cohort": {
+        "n_series": 118,
+        "mean_floor": {
+          "wmape": 1.8083,
+          "wmape_h": 0.7141,
+          "n_rows": 16520
+        },
+        "sba": {
+          "wmape": 1.9065,
+          "wmape_h": 0.7206,
+          "n_rows": 16520
+        },
+        "croston": {
+          "wmape": 1.9542,
+          "wmape_h": 0.7397,
+          "n_rows": 16520
+        },
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0,
+          "n_rows": 16520
+        }
+      },
+      "reference": {
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0,
+          "n_rows": 4340
+        },
+        "oracle_median": 0.9981,
+        "oracle_mean": 1.5172,
+        "mean_oracle_above_zero_line": true
+      },
+      "winner_wmape_by_sb_class": {
+        "intermittent": {
+          "wmape": 1.6755,
+          "n_obs": 3220,
+          "wmape_h": 0.4907
+        },
+        "lumpy": {
+          "wmape": 1.5682,
+          "n_obs": 1120,
+          "wmape_h": 0.4838
+        }
+      },
+      "winner_wmape_by_fold": {
+        "fold_0": {
+          "wmape": 1.4707,
+          "wmape_h": 0.4116,
+          "n_rows": 868
+        },
+        "fold_1": {
+          "wmape": 1.7118,
+          "wmape_h": 0.455,
+          "n_rows": 868
+        },
+        "fold_2": {
+          "wmape": 1.5977,
+          "wmape_h": 0.4546,
+          "n_rows": 868
+        },
+        "fold_3": {
+          "wmape": 1.736,
+          "wmape_h": 0.5771,
+          "n_rows": 868
+        },
+        "fold_4": {
+          "wmape": 1.7466,
+          "wmape_h": 0.599,
+          "n_rows": 868
+        }
+      },
+      "leakage_check_pass": true,
+      "critic_violations": {
+        "below_min_forecast": 0,
+        "above_max_median_ratio": 0,
+        "above_max_median_ratio_rate": 0.0
+      },
+      "fit_seconds_total": 39.6
+    }
+  }
+}

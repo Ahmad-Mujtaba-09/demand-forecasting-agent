@@ -16,8 +16,8 @@ dataset's own distribution. The **evidence is M5 only**: it has not been run on 
 retailer's data. Generality here is a design property argued for, not a set of features
 built — there are deliberately no format converters or column auto-detection.
 
-> **Status:** Phase 1 (EDA & dataset selection) and Phase 2 (L2 baseline) complete. ML core in progress.
-> **96 tests passing.** · Validated on M5 (30,490 store-item series).
+> **Status:** Phases 1–3 complete (EDA & dataset selection · L2 baseline · LightGBM bake-off). ML core done; agent layer next.
+> **141 tests passing.** · Validated on M5 (30,490 store-item series).
 
 ---
 
@@ -172,6 +172,60 @@ under [`src/dfa/`](src/dfa/):
   at/after `origin + horizon`, never before. Full write-up:
   [`docs/results/02_phase2_baseline_results.md`](docs/results/02_phase2_baseline_results.md).
 
+## What's implemented (Phase 3 — the bake-off)
+
+The point-forecast model, chosen per branch on the frozen Phase-2 feature set so the
+only thing that varies is the **objective**. New modules:
+
+| Module | Role |
+|---|---|
+| [`manifest.py`](src/dfa/manifest.py) | Run provenance — git SHA, pinned library versions, seed, thread count, feature-manifest and id-list hashes. Stamped into every artifact so a result traces to the stack that produced it. |
+| [`models.py`](src/dfa/models.py) | LightGBM entrants (L2 / Tweedie / Poisson / quantile-0.5) behind one fit-predict interface, a **pre-registered** capacity grid, and the determinism settings. Early stopping runs on a tail slice of the fold's own *training* window — never the validation block. |
+| [`croston.py`](src/dfa/croston.py) | Croston (1972) and the Syntetos–Boylan Approximation — the literature-standard intermittent-demand estimator, and the B2 branch's proper comparator. Untuned, so it cannot win by having been tuned harder. |
+| [`reference_lines.py`](src/dfa/reference_lines.py) | Phase 2's predictions re-scored under the Phase 3 metrics, plus the oracle attainability bounds. |
+| [`run_bakeoff.py`](src/dfa/run_bakeoff.py) | The bake-off: selection on folds 0–3, a selection-free last fold, per-branch-cohort scores, critic-bound and leakage checks. |
+| [`run_quantiles.py`](src/dfa/run_quantiles.py) · [`run_fullcell.py`](src/dfa/run_fullcell.py) | B4 intervals (pinball, coverage, crossing) and the full-cell confirmation deferred from Phase 2. |
+| [`build_contract.py`](src/dfa/build_contract.py) | Emits `phase3_model_contract.json` — the **machine-readable handoff** Phase 4's Executor reads. Completeness over the router's branches is asserted, not assumed. |
+
+### The metric finding
+
+Daily WMAPE is **degenerate on intermittent demand**: absolute error is minimised by the
+conditional *median*, which is 0 whenever zero-share > 0.5 (Kolassa 2016). Measured on our
+own data, a forecaster handed the *true* window mean still scores **1.078 (B)** and **1.517
+(C)** — worse than forecasting nothing — so no Tweedie or Poisson model could ever clear
+the 1.0 line there. The quantile-median entrant confirms it from the other side: on C it
+scores exactly **1.0000 by predicting all zeros**.
+
+So Phase 3 reports **horizon-aggregated WMAPE_28** (per-series 28-day totals — the quantity
+a replenishment decision actually consumes) as the decision metric, alongside daily WMAPE.
+**The bar is not lowered:** a zero forecast still scores exactly 1.000 under it. What
+changes is that the bar becomes reachable — and Phase 2's floor turns out to clear it on
+all three datasets, so "the baseline lost to doing nothing" was a metric artifact.
+
+### Bake-off results (WMAPE_28, 5-fold rolling origin)
+
+| Dataset | **Tweedie** | Poisson | LGBM-L2 | quantile-0.5 | Phase 2 Ridge | zero |
+|---|---|---|---|---|---|---|
+| **A** — dense | **0.302** | 0.317 | 0.378 | 0.347 | 0.326 | 1.000 |
+| **B** — intermittent | **0.348** | 0.353 | 0.370 | 0.711 | 0.473 | 1.000 |
+| **C** — slow / sparse | **0.488** | 0.497 | 0.501 | 1.000 | 0.639 | 1.000 |
+
+- **Tweedie wins every dataset and every branch cohort.** Including the `standard` cohort it
+  was *not* supposed to win — so the **B1-vs-Standard split does not earn its complexity**
+  and is recommended for removal in Phase 4 (the B3 precedent repeating).
+- **The objective is what wins, not the model class.** On A, a gradient-boosted tree fitted
+  with squared error is *worse* than the linear Ridge (0.378 vs 0.326); only the objective
+  recovers it. That is exactly why the LGBM-L2 control was in the field.
+- **Croston/SBA takes the B2 fallback** over Phase 2's mean floor (0.716 vs 0.741 mean
+  across the deciding cohorts) — a real but modest ~3% improvement, honestly reported.
+- **Full-cell confirmation:** the 250-series samples reproduce the full cells to within
+  0.2% (A 823 series, B 515), closing Phase 2's deferred item.
+- **Determinism verified empirically** — three independent runs, bit-identical results.
+
+Full write-up: [`docs/results/03_phase3_bakeoff_results.md`](docs/results/03_phase3_bakeoff_results.md).
+
+---
+
 ### 📊 Phase 2 review artifact
 
 Same treatment as Phase 1 — every comparator charted against the 1.000 rule, plus the
@@ -225,12 +279,14 @@ demand_forecasting_agent/
 │   ├── plans/
 │   │   ├── 00_master_plan.md       # overarching plan, all phases
 │   │   ├── 01_phase1_eda_plan.md   # Phase 1 sub-plan
-│   │   └── 02_phase2_baseline_plan.md
+│   │   ├── 02_phase2_baseline_plan.md
+│   │   └── 03_phase3_bakeoff_plan.md
 │   ├── results/
-│   │   └── 02_phase2_baseline_results.md
+│   │   ├── 02_phase2_baseline_results.md
+│   │   └── 03_phase3_bakeoff_results.md
 │   └── artifacts/                   # phase1_review.md, phase2_review.md
 ├── src/dfa/                        # ML core (Phases 1–3)
-├── tests/                          # one suite per module (96 tests)
+├── tests/                          # one suite per module (141 tests)
 └── artifacts/                      # signal table, selection, thresholds, review, baseline results
 ```
 
@@ -259,8 +315,15 @@ python -m dfa.calibrate_thresholds    # -> artifacts/thresholds.json
 python -m dfa.run_baseline            # -> artifacts/phase2_baseline_results.json  (~2 min)
 python -m dfa.build_phase2_review     # -> artifacts/phase2_review_standalone.html
 
-# 5. tests
-pytest                                # 96 passing
+# 5. run the Phase 3 bake-off  (~20 min total)
+python -m dfa.reference_lines         # -> artifacts/phase3_reference_lines.json
+python -m dfa.run_bakeoff             # -> artifacts/phase3_bakeoff_results.json
+python -m dfa.run_quantiles           # -> artifacts/phase3_quantile_results.json
+python -m dfa.run_fullcell            # -> artifacts/phase3_fullcell_results.json
+python -m dfa.build_contract          # -> artifacts/phase3_model_contract.json
+
+# 6. tests
+pytest                                # 141 passing
 ```
 
 `pyproject.toml` puts `src/` on the path for pytest automatically; the `PYTHONPATH=src`
@@ -277,7 +340,7 @@ sub-plan, small tested increments, results shown across all datasets before proc
 |---|---|---|
 | **1 — EDA & dataset selection** | Three branch signals over M5; four sub-datasets; calibrated thresholds. | ✅ Complete |
 | **2 — Baseline** | Plain L2 (linear regression) baseline per dataset — the number every later model must beat. WMAPE on a rolling-origin holdout, frozen feature set, sparse-series mean fallback. | ✅ Complete |
-| **3 — LightGBM bake-off** | Per dataset: L2 vs Tweedie vs Poisson on WMAPE, proper time-series holdout (expanding/rolling, never shuffled), with an explicit leakage check on lag/rolling features. Quantile models added per B4. | Planned |
+| **3 — LightGBM bake-off** | L2 vs Tweedie vs Poisson vs quantile-median, on the frozen feature set and a rolling-origin holdout. **Tweedie wins every dataset and every branch cohort**; Croston/SBA takes the B2 fallback. Emits the machine-readable model contract Phase 4 consumes. | ✅ Complete |
 | **4 — Agent wrapper (Agno)** | Wrap the working core: planner → executor → critic → report. The critic must actually gate acceptance. | Planned |
 | **5 — Final test** | Run the finished agent end-to-end on the held-out sub-dataset D. | Planned |
 
@@ -288,6 +351,13 @@ sub-plan, small tested increments, results shown across all datasets before proc
 - **Master plan:** [docs/plans/00_master_plan.md](docs/plans/00_master_plan.md)
 - **Phase 1 sub-plan:** [docs/plans/01_phase1_eda_plan.md](docs/plans/01_phase1_eda_plan.md)
 - **Phase 2 sub-plan:** [docs/plans/02_phase2_baseline_plan.md](docs/plans/02_phase2_baseline_plan.md) · **results:** [docs/results/02_phase2_baseline_results.md](docs/results/02_phase2_baseline_results.md)
+- **Phase 3 sub-plan:** [docs/plans/03_phase3_bakeoff_plan.md](docs/plans/03_phase3_bakeoff_plan.md) · **results:** [docs/results/03_phase3_bakeoff_results.md](docs/results/03_phase3_bakeoff_results.md)
 - **Dataset:** M5 Forecasting – Accuracy (Kaggle)
-- **Intermittency classification:** Syntetos, A. A., & Boylan, J. E. (2005). *The accuracy
-  of intermittent demand estimates.* International Journal of Forecasting, 21(2), 303–314.
+- **Intermittency classification & SBA:** Syntetos, A. A., & Boylan, J. E. (2005). *The
+  accuracy of intermittent demand estimates.* International Journal of Forecasting, 21(2),
+  303–314.
+- **Croston's method:** Croston, J. D. (1972). *Forecasting and stock control for
+  intermittent demands.* Operational Research Quarterly, 23(3), 289–303.
+- **Why MAE-type metrics degenerate on intermittent demand:** Kolassa, S. (2016).
+  *Evaluating predictive count data distributions in retail sales forecasting.*
+  International Journal of Forecasting, 32(3), 788–803.
