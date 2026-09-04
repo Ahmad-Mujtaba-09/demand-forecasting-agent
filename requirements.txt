@@ -1,18 +1,25 @@
 # Demand-Forecasting Agent — Python dependencies
-# Tested on Python 3.12. Pinned to the versions this repo was developed against;
-# relax as needed.
+# Tested on Python 3.12.
+#
+# PINNED, not ranged. A `>=` range does not support a reproducibility claim: a
+# fresh install can silently change a tree-split tie-break, a pandas groupby
+# default, or a BLAS reduction order, and the Phase 5 sealed run is only
+# meaningful if the configuration that produced it is pinned to a commit. These
+# are the versions actually resolved in the development environment; the same
+# versions are stamped into every results JSON by dfa.manifest, so a result can
+# always be traced to the stack that produced it.
 
 # --- Phase 1 core (EDA, signals, dataset selection, thresholds) ---
-pandas>=3.0
-numpy>=2.5
-pyarrow>=17          # parquet I/O for the signal table
+pandas==3.0.3
+numpy==2.5.1
+pyarrow==25.0.0          # parquet I/O for the signal table
 
 # --- Phase 2-3 (baselines + LightGBM bake-off) ---
-lightgbm>=4.6
-scikit-learn>=1.5    # L2 baseline, utilities
+lightgbm==4.6.0
+scikit-learn==1.9.0      # L2 baseline, utilities
 
 # --- Phase 4 (agent wrapper) ---
-# agno                # uncomment when building the agent layer
+# agno                   # uncomment when building the agent layer
 
 # --- Dev ---
-pytest>=8
+pytest==9.1.1

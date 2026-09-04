@@ -1,0 +1,115 @@
+{
+  "manifest": {
+    "git_sha": "869d560-dirty",
+    "python": "3.12.13",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "pandas": "3.0.3",
+      "numpy": "2.5.1",
+      "pyarrow": "25.0.0",
+      "lightgbm": "4.6.0",
+      "scikit-learn": "1.9.0"
+    },
+    "seed": 20240229,
+    "num_threads": 4,
+    "step": "phase3_reference_lines"
+  },
+  "datasets": {
+    "A": {
+      "cell": "CA_3 x FOODS_3",
+      "n_series": 250,
+      "ids_hash": "4e8d9cf828a484c9",
+      "lines": {
+        "ridge_floor": {
+          "wmape": 0.6207,
+          "wmape_h": 0.3255
+        },
+        "ridge_l2_subset": {
+          "wmape": 0.6204,
+          "wmape_h": 0.3251
+        },
+        "naive_modelable": {
+          "wmape": 0.732,
+          "wmape_h": 0.4803
+        },
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0
+        }
+      },
+      "oracles": {
+        "oracle_median": 0.4633,
+        "oracle_mean": 0.4904
+      },
+      "mean_oracle_above_zero_line": false,
+      "routing": {
+        "l2": 248,
+        "floor": 2
+      }
+    },
+    "B": {
+      "cell": "CA_2 x HOUSEHOLD_2",
+      "n_series": 250,
+      "ids_hash": "9dae9d1fdf403cd9",
+      "lines": {
+        "ridge_floor": {
+          "wmape": 1.1055,
+          "wmape_h": 0.4731
+        },
+        "ridge_l2_subset": {
+          "wmape": 1.0916,
+          "wmape_h": 0.4665
+        },
+        "naive_modelable": {
+          "wmape": 1.2067,
+          "wmape_h": 0.4218
+        },
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0
+        }
+      },
+      "oracles": {
+        "oracle_median": 0.8823,
+        "oracle_mean": 1.0913
+      },
+      "mean_oracle_above_zero_line": true,
+      "routing": {
+        "l2": 223,
+        "floor": 27
+      }
+    },
+    "C": {
+      "cell": "CA_4 x HOBBIES_2",
+      "n_series": 149,
+      "ids_hash": "a887547de46719bd",
+      "lines": {
+        "ridge_floor": {
+          "wmape": 1.6308,
+          "wmape_h": 0.6388
+        },
+        "ridge_l2_subset": {
+          "wmape": 1.4013,
+          "wmape_h": 0.5413
+        },
+        "naive_modelable": {
+          "wmape": 1.6685,
+          "wmape_h": 0.567
+        },
+        "zero": {
+          "wmape": 1.0,
+          "wmape_h": 1.0
+        }
+      },
+      "oracles": {
+        "oracle_median": 0.9992,
+        "oracle_mean": 1.6498
+      },
+      "mean_oracle_above_zero_line": true,
+      "routing": {
+        "l2": 31,
+        "floor": 118
+      }
+    }
+  }
+}

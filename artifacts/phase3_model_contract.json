@@ -1,0 +1,318 @@
+{
+  "run_manifest": {
+    "git_sha": "869d560-dirty",
+    "python": "3.12.13",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "pandas": "3.0.3",
+      "numpy": "2.5.1",
+      "pyarrow": "25.0.0",
+      "lightgbm": "4.6.0",
+      "scikit-learn": "1.9.0"
+    },
+    "seed": 20240229,
+    "num_threads": 4,
+    "step": "phase3_contract"
+  },
+  "contract_version": 1,
+  "consumed_by": "Phase 4 Executor -- reads this, does NOT re-tune or re-threshold",
+  "thresholds_ref": "artifacts/thresholds.json",
+  "feature_manifest_hash": "447f7447d0e6fb23",
+  "capacity_grid_pre_registered": [
+    {
+      "num_leaves": 15,
+      "min_data_in_leaf": 20
+    },
+    {
+      "num_leaves": 15,
+      "min_data_in_leaf": 100
+    },
+    {
+      "num_leaves": 31,
+      "min_data_in_leaf": 20
+    },
+    {
+      "num_leaves": 31,
+      "min_data_in_leaf": 100
+    }
+  ],
+  "min_cohort_series": 20,
+  "min_cohort_fallback_branch": "B2_baseline",
+  "router": {
+    "function": "dfa.calibrate_thresholds.classify_branch",
+    "inputs": [
+      "zero_share",
+      "adi"
+    ],
+    "branches": [
+      "B1_tweedie",
+      "standard",
+      "B2_baseline"
+    ]
+  },
+  "branches": {
+    "B1_tweedie": {
+      "objective": "lgb_tweedie",
+      "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.5]",
+      "params": {
+        "objective": "tweedie",
+        "tweedie_variance_power": 1.5,
+        "num_leaves": 31,
+        "min_data_in_leaf": 20,
+        "learning_rate": 0.05,
+        "seed": 20240229,
+        "bagging_seed": 20240229,
+        "feature_fraction_seed": 20240229,
+        "data_random_seed": 20240229,
+        "deterministic": true,
+        "force_row_wise": true,
+        "num_threads": 4,
+        "verbosity": -1
+      },
+      "evidence": {
+        "decided_on": [
+          "A",
+          "B",
+          "C"
+        ],
+        "votes": {
+          "lgb_tweedie": 3
+        },
+        "cells": {
+          "A": {
+            "n_series": 28,
+            "scores": {
+              "lgb_l2": 1.3852,
+              "lgb_poisson": 0.5358,
+              "lgb_quantile50": 0.8155,
+              "lgb_tweedie": 0.4716
+            },
+            "best": "lgb_tweedie",
+            "skill_vs_zero": 0.5284
+          },
+          "B": {
+            "n_series": 135,
+            "scores": {
+              "lgb_l2": 0.4683,
+              "lgb_poisson": 0.4268,
+              "lgb_quantile50": 0.9005,
+              "lgb_tweedie": 0.4238
+            },
+            "best": "lgb_tweedie",
+            "skill_vs_zero": 0.5762
+          },
+          "C": {
+            "n_series": 31,
+            "scores": {
+              "lgb_l2": 0.5005,
+              "lgb_poisson": 0.4967,
+              "lgb_quantile50": 1.0,
+              "lgb_tweedie": 0.4882
+            },
+            "best": "lgb_tweedie",
+            "skill_vs_zero": 0.5118
+          }
+        },
+        "thin_cells_excluded": {},
+        "tie_broken_on_mean_skill": false,
+        "frozen_config": {
+          "rule": "min mean selection-fold WMAPE_28 across the deciding datasets",
+          "mean_score": 0.3794,
+          "per_dataset_best_config": {
+            "A": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.5]",
+            "B": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.3]",
+            "C": "lgb_tweedie[min_data_in_leaf=100,num_leaves=15,tweedie_variance_power=1.1]"
+          },
+          "cost_vs_per_dataset_best": {
+            "A": 0.0029,
+            "B": 0.0042,
+            "C": 0.0051
+          }
+        }
+      }
+    },
+    "standard": {
+      "objective": "lgb_tweedie",
+      "config_id": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.5]",
+      "params": {
+        "objective": "tweedie",
+        "tweedie_variance_power": 1.5,
+        "num_leaves": 31,
+        "min_data_in_leaf": 20,
+        "learning_rate": 0.05,
+        "seed": 20240229,
+        "bagging_seed": 20240229,
+        "feature_fraction_seed": 20240229,
+        "data_random_seed": 20240229,
+        "deterministic": true,
+        "force_row_wise": true,
+        "num_threads": 4,
+        "verbosity": -1
+      },
+      "evidence": {
+        "decided_on": [
+          "A",
+          "B"
+        ],
+        "votes": {
+          "lgb_tweedie": 2
+        },
+        "cells": {
+          "A": {
+            "n_series": 220,
+            "scores": {
+              "lgb_l2": 0.362,
+              "lgb_poisson": 0.3136,
+              "lgb_quantile50": 0.3392,
+              "lgb_tweedie": 0.2988
+            },
+            "best": "lgb_tweedie",
+            "skill_vs_zero": 0.7012
+          },
+          "B": {
+            "n_series": 88,
+            "scores": {
+              "lgb_l2": 0.319,
+              "lgb_poisson": 0.3146,
+              "lgb_quantile50": 0.6144,
+              "lgb_tweedie": 0.3084
+            },
+            "best": "lgb_tweedie",
+            "skill_vs_zero": 0.6916
+          }
+        },
+        "thin_cells_excluded": {},
+        "tie_broken_on_mean_skill": false,
+        "frozen_config": {
+          "rule": "min mean selection-fold WMAPE_28 across the deciding datasets",
+          "mean_score": 0.3336,
+          "per_dataset_best_config": {
+            "A": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.5]",
+            "B": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.3]"
+          },
+          "cost_vs_per_dataset_best": {
+            "A": 0.0029,
+            "B": 0.0042
+          }
+        }
+      }
+    },
+    "B2_baseline": {
+      "estimator": "sba",
+      "params": {
+        "alpha": 0.1,
+        "sba": true
+      },
+      "evidence": {
+        "votes": {
+          "sba": 1,
+          "mean_floor": 1
+        },
+        "cells": {
+          "B": {
+            "n_series": 27,
+            "scores": {
+              "mean_floor": 0.7668,
+              "sba": 0.7109,
+              "croston": 0.716
+            },
+            "best": "sba",
+            "skill_vs_zero": 0.2891
+          },
+          "C": {
+            "n_series": 118,
+            "scores": {
+              "mean_floor": 0.7141,
+              "sba": 0.7206,
+              "croston": 0.7397
+            },
+            "best": "mean_floor",
+            "skill_vs_zero": 0.2859
+          }
+        }
+      }
+    }
+  },
+  "quantiles": {
+    "levels": [
+      0.1,
+      0.5,
+      0.9
+    ],
+    "params": {
+      "0.1": {
+        "objective": "quantile",
+        "alpha": 0.1,
+        "num_leaves": 15,
+        "min_data_in_leaf": 20,
+        "learning_rate": 0.05,
+        "seed": 20240229,
+        "bagging_seed": 20240229,
+        "feature_fraction_seed": 20240229,
+        "data_random_seed": 20240229,
+        "deterministic": true,
+        "force_row_wise": true,
+        "num_threads": 4,
+        "verbosity": -1
+      },
+      "0.5": {
+        "objective": "quantile",
+        "alpha": 0.5,
+        "num_leaves": 31,
+        "min_data_in_leaf": 100,
+        "learning_rate": 0.05,
+        "seed": 20240229,
+        "bagging_seed": 20240229,
+        "feature_fraction_seed": 20240229,
+        "data_random_seed": 20240229,
+        "deterministic": true,
+        "force_row_wise": true,
+        "num_threads": 4,
+        "verbosity": -1
+      },
+      "0.9": {
+        "objective": "quantile",
+        "alpha": 0.9,
+        "num_leaves": 31,
+        "min_data_in_leaf": 100,
+        "learning_rate": 0.05,
+        "seed": 20240229,
+        "bagging_seed": 20240229,
+        "feature_fraction_seed": 20240229,
+        "data_random_seed": 20240229,
+        "deterministic": true,
+        "force_row_wise": true,
+        "num_threads": 4,
+        "verbosity": -1
+      }
+    },
+    "monotone_sort": true,
+    "observed_crossing_rate": {
+      "A": 0.00334,
+      "B": 0.0,
+      "C": 0.0
+    },
+    "horizon_total_intervals": "deferred -- quantile of a sum != sum of quantiles"
+  },
+  "critic_bounds": {
+    "min_forecast": 0.0,
+    "max_median_ratio": 24.0,
+    "observed_violations": {
+      "A": {
+        "below_min_forecast": 0,
+        "above_max_median_ratio": 0,
+        "above_max_median_ratio_rate": 0.0
+      },
+      "B": {
+        "below_min_forecast": 0,
+        "above_max_median_ratio": 0,
+        "above_max_median_ratio_rate": 0.0
+      },
+      "C": {
+        "below_min_forecast": 0,
+        "above_max_median_ratio": 0,
+        "above_max_median_ratio_rate": 0.0
+      }
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "manifest": {
+    "git_sha": "869d560-dirty",
+    "python": "3.12.13",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "pandas": "3.0.3",
+      "numpy": "2.5.1",
+      "pyarrow": "25.0.0",
+      "lightgbm": "4.6.0",
+      "scikit-learn": "1.9.0"
+    },
+    "seed": 20240229,
+    "num_threads": 4,
+    "step": "phase3_quantiles",
+    "levels": [
+      0.1,
+      0.5,
+      0.9
+    ]
+  },
+  "datasets": {
+    "A": {
+      "cell": "CA_3 x FOODS_3",
+      "n_series_modelable": 248,
+      "n_rows": 34720,
+      "zero_share_rows": 0.3801,
+      "levels": {
+        "0.1": {
+          "config_id": "lgb_quantile10[min_data_in_leaf=20,num_leaves=15,alpha=0.1]",
+          "pinball": 0.3503,
+          "coverage": 0.3801,
+          "coverage_strict": 0.0094,
+          "coverage_target": 0.1,
+          "confounded_by_zero_mass": true,
+          "mean_forecast": 0.0856
+        },
+        "0.5": {
+          "config_id": "lgb_quantile50[min_data_in_leaf=100,num_leaves=31,alpha=0.5]",
+          "pinball": 1.03068,
+          "coverage": 0.5562,
+          "coverage_strict": 0.5297,
+          "coverage_target": 0.5,
+          "confounded_by_zero_mass": false,
+          "mean_forecast": 2.7586
+        },
+        "0.9": {
+          "config_id": "lgb_quantile90[min_data_in_leaf=100,num_leaves=31,alpha=0.9]",
+          "pinball": 0.65544,
+          "coverage": 0.9055,
+          "coverage_strict": 0.9055,
+          "coverage_target": 0.9,
+          "confounded_by_zero_mass": false,
+          "mean_forecast": 7.2331
+        }
+      },
+      "crossing_rate": 0.00334,
+      "mean_interval_width_q10_q90": 7.1475,
+      "interval_coverage_q10_q90": 0.8961,
+      "interval_coverage_target": 0.8
+    },
+    "B": {
+      "cell": "CA_2 x HOUSEHOLD_2",
+      "n_series_modelable": 223,
+      "n_rows": 31220,
+      "zero_share_rows": 0.6769,
+      "levels": {
+        "0.1": {
+          "config_id": "lgb_quantile10[min_data_in_leaf=20,num_leaves=15,alpha=0.1]",
+          "pinball": 0.05679,
+          "coverage": 0.6769,
+          "coverage_strict": 0.0,
+          "coverage_target": 0.1,
+          "confounded_by_zero_mass": true,
+          "mean_forecast": 0.0
+        },
+        "0.5": {
+          "config_id": "lgb_quantile50[min_data_in_leaf=20,num_leaves=31,alpha=0.5]",
+          "pinball": 0.2647,
+          "coverage": 0.681,
+          "coverage_strict": 0.0596,
+          "coverage_target": 0.5,
+          "confounded_by_zero_mass": false,
+          "mean_forecast": 0.1558
+        },
+        "0.9": {
+          "config_id": "lgb_quantile90[min_data_in_leaf=100,num_leaves=31,alpha=0.9]",
+          "pinball": 0.20662,
+          "coverage": 0.9247,
+          "coverage_strict": 0.9163,
+          "coverage_target": 0.9,
+          "confounded_by_zero_mass": false,
+          "mean_forecast": 1.65
+        }
+      },
+      "crossing_rate": 0.0,
+      "mean_interval_width_q10_q90": 1.65,
+      "interval_coverage_q10_q90": 0.9247,
+      "interval_coverage_target": 0.8
+    },
+    "C": {
+      "cell": "CA_4 x HOBBIES_2",
+      "n_series_modelable": 31,
+      "n_rows": 4340,
+      "zero_share_rows": 0.8283,
+      "levels": {
+        "0.1": {
+          "config_id": "lgb_quantile10[min_data_in_leaf=20,num_leaves=15,alpha=0.1]",
+          "pinball": 0.02454,
+          "coverage": 0.8283,
+          "coverage_strict": 0.0,
+          "coverage_target": 0.1,
+          "confounded_by_zero_mass": true,
+          "mean_forecast": 0.0
+        },
+        "0.5": {
+          "config_id": "lgb_quantile50[min_data_in_leaf=20,num_leaves=15,alpha=0.5]",
+          "pinball": 0.1227,
+          "coverage": 0.8283,
+          "coverage_strict": 0.0,
+          "coverage_target": 0.5,
+          "confounded_by_zero_mass": false,
+          "mean_forecast": 0.0
+        },
+        "0.9": {
+          "config_id": "lgb_quantile90[min_data_in_leaf=20,num_leaves=31,alpha=0.9]",
+          "pinball": 0.14843,
+          "coverage": 0.9514,
+          "coverage_strict": 0.8442,
+          "coverage_target": 0.9,
+          "confounded_by_zero_mass": false,
+          "mean_forecast": 1.0367
+        }
+      },
+      "crossing_rate": 0.0,
+      "mean_interval_width_q10_q90": 1.0367,
+      "interval_coverage_q10_q90": 0.9514,
+      "interval_coverage_target": 0.8
+    }
+  }
+}

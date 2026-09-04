@@ -1,0 +1,65 @@
+{
+  "manifest": {
+    "git_sha": "869d560-dirty",
+    "python": "3.12.13",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "pandas": "3.0.3",
+      "numpy": "2.5.1",
+      "pyarrow": "25.0.0",
+      "lightgbm": "4.6.0",
+      "scikit-learn": "1.9.0"
+    },
+    "seed": 20240229,
+    "num_threads": 4,
+    "step": "phase3_full_cell"
+  },
+  "datasets": {
+    "A": {
+      "cell": "CA_3 x FOODS_3",
+      "winner": "lgb_tweedie",
+      "winner_config": "lgb_tweedie[min_data_in_leaf=100,num_leaves=31,tweedie_variance_power=1.5]",
+      "n_sample": 250,
+      "n_full": 823,
+      "ids_hash_full": "af839053a291bc32",
+      "n_modelable_full": 820,
+      "n_b2_full": 3,
+      "sample_score": {
+        "wmape": 0.592,
+        "wmape_h": 0.3015,
+        "n_rows": 34720
+      },
+      "full_score": {
+        "wmape": 0.6053,
+        "wmape_h": 0.3008,
+        "n_rows": 114701
+      },
+      "delta_wmape_h": -0.0007,
+      "delta_wmape": 0.0133,
+      "fit_seconds": 148.0
+    },
+    "B": {
+      "cell": "CA_2 x HOUSEHOLD_2",
+      "winner": "lgb_tweedie",
+      "winner_config": "lgb_tweedie[min_data_in_leaf=20,num_leaves=31,tweedie_variance_power=1.3]",
+      "n_sample": 250,
+      "n_full": 515,
+      "ids_hash_full": "b51e78513115bfaf",
+      "n_modelable_full": 457,
+      "n_b2_full": 58,
+      "sample_score": {
+        "wmape": 1.1346,
+        "wmape_h": 0.3475,
+        "n_rows": 31220
+      },
+      "full_score": {
+        "wmape": 1.0863,
+        "wmape_h": 0.3454,
+        "n_rows": 63980
+      },
+      "delta_wmape_h": -0.0021,
+      "delta_wmape": -0.0483,
+      "fit_seconds": 87.0
+    }
+  }
+}

@@ -46,8 +46,14 @@ ADI_SPARSE_PCT: float = 90     # B2 floor: upper tail of the dataset's ADI
 # to `standard`. Chosen at the low end of a defensible P60-P75 band to keep the
 # most-intermittent sub-dataset Tweedie-dominant; raise it for a stricter "high".
 ZERO_TWEEDIE_PCT: float = 60
-DOW_SEASONAL_PCT: float = 90   # B3 cut: upper tail of dataset's DoW variance-explained
 MAX_RATIO_PCT: float = 99      # critic: dataset's demand-tail ratio
+# NOTE: there is deliberately no day-of-week seasonality cut. B3 (a per-series
+# toggle for calendar features) was dropped in Phase 1 -- master plan sec 3 and
+# sec 7 -- and EVERY series now gets the calendar features unconditionally, on any
+# dataset. A gate whose "on" state is the only state is a no-op by construction,
+# not merely unused on M5. The dow_season signal itself is retained as descriptive
+# EDA (signals.dow_seasonality, and the eta-squared percentiles in the
+# distribution summary), which is where a new dataset's weekly structure shows up.
 
 
 @dataclass(frozen=True)
@@ -55,7 +61,6 @@ class Thresholds:
     # --- data-relative: fit to the passed dataset's own distribution ---
     adi_sparse_cut: float          # ADI >= this -> B2 (P{ADI_SPARSE_PCT} of full-pool ADI)
     zero_share_tweedie_cut: float  # zero_share >= this (and not B2) -> B1 (P60 of NON-SPARSE pool)
-    dow_season_cut: float          # dow_season >= this -> add seasonal features (P90)
     max_median_ratio: float        # forecast > this * series median non-zero is implausible
     # --- absolute: domain facts / literature, NOT tuned per dataset ---
     min_forecast: float            # 0.0 -- demand is non-negative (domain fact)
@@ -83,20 +88,17 @@ def calibrate(pool: pd.DataFrame) -> Thresholds:
     return Thresholds(
         adi_sparse_cut=adi_sparse,
         zero_share_tweedie_cut=round(p("zero_share", ZERO_TWEEDIE_PCT, non_sparse), 3),
-        dow_season_cut=round(p("dow_season", DOW_SEASONAL_PCT), 3),
         max_median_ratio=round(p("max_med_ratio", MAX_RATIO_PCT), 1),
         min_forecast=0.0,
         basis=(f"data-relative: full pool n={len(pool)}, non-sparse n={len(non_sparse)}; "
                f"ADI P{ADI_SPARSE_PCT} (full), zero-share P{ZERO_TWEEDIE_PCT} (non-sparse), "
-               f"DoW P{DOW_SEASONAL_PCT} (full), ratio P{MAX_RATIO_PCT} (full). "
+               f"ratio P{MAX_RATIO_PCT} (full). "
                f"S-B cutoffs absolute (see signals.py)."),
     )
 
 
-def classify_branch(
-    zero_share: float, adi: float, dow_season: float, thr: Thresholds
-) -> tuple[str, bool]:
-    """Deterministic executor rule. Returns (objective_branch, add_seasonal).
+def classify_branch(zero_share: float, adi: float, thr: Thresholds) -> str:
+    """Deterministic executor rule. Returns the objective branch.
 
     Objective branches (documented in master plan sec 3):
     - B2_baseline: too sparse (ADI >= cut) -> simple baseline (Croston/MA).
@@ -108,17 +110,17 @@ def classify_branch(
     Precedence: sparsity (B2) is checked first -- a too-sparse series falls back
     to a baseline regardless of zero_share; only modelable series reach the
     Tweedie-vs-standard decision, which is why zero_share_tweedie_cut is
-    calibrated on the non-sparse subset. Seasonality is orthogonal (features
-    on/off).
+    calibrated on the non-sparse subset.
+
+    The branch depends on zero_share and adi ONLY. Seasonality is deliberately not
+    an input: B3 was dropped in Phase 1 and calendar features go to every series
+    (master plan sec 3), so there is nothing for a seasonal flag to switch.
     """
     if not np.isfinite(adi) or adi >= thr.adi_sparse_cut:
-        branch = "B2_baseline"
-    elif zero_share >= thr.zero_share_tweedie_cut:
-        branch = "B1_tweedie"
-    else:
-        branch = "standard"
-    add_seasonal = bool(np.isfinite(dow_season) and dow_season >= thr.dow_season_cut)
-    return branch, add_seasonal
+        return "B2_baseline"
+    if zero_share >= thr.zero_share_tweedie_cut:
+        return "B1_tweedie"
+    return "standard"
 
 
 def load_nond_pool() -> pd.DataFrame:
@@ -144,19 +146,13 @@ def main() -> None:
 
     # apply to the pool to report how many series each branch would claim
     branches = pool.apply(
-        lambda r: classify_branch(r["zero_share"], r["adi"], r["dow_season"], thr)[0],
-        axis=1,
-    )
-    seasonal = pool.apply(
-        lambda r: classify_branch(r["zero_share"], r["adi"], r["dow_season"], thr)[1],
-        axis=1,
+        lambda r: classify_branch(r["zero_share"], r["adi"], thr), axis=1
     )
 
     out = {
         "thresholds": asdict(thr),
         "branch_counts_non_d": branches.value_counts().to_dict(),
         "branch_fracs_non_d": branches.value_counts(normalize=True).round(3).to_dict(),
-        "seasonal_feature_frac": round(float(seasonal.mean()), 3),
         "distribution_summary_non_d": _distribution_summary(pool),
     }
     out_path = config.ARTIFACTS_DIR / "thresholds.json"
@@ -169,7 +165,6 @@ def main() -> None:
     print("\nBranch assignment over non-D pool:")
     for b, n in out["branch_counts_non_d"].items():
         print(f"  {b:14} {n:6}  ({out['branch_fracs_non_d'][b]:.1%})")
-    print(f"  add_seasonal (B3):  {out['seasonal_feature_frac']:.1%} of series")
 
 
 if __name__ == "__main__":

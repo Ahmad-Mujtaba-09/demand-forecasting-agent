@@ -9,6 +9,8 @@ from __future__ import annotations
 import json
 
 import numpy as np
+from dataclasses import asdict
+
 import pytest
 
 from dfa import config
@@ -41,17 +43,17 @@ def test_calibration_pool_excludes_heldout():
 
 def test_sparsity_precedes_tweedie(thr):
     # a very zero-heavy AND very sparse series must be B2, not B1
-    branch, _ = ct.classify_branch(zero_share=0.95, adi=20.0, dow_season=0.3, thr=thr)
+    branch = ct.classify_branch(zero_share=0.95, adi=20.0, thr=thr)
     assert branch == "B2_baseline"
 
 
 def test_modelable_zeroheavy_is_tweedie(thr):
-    branch, _ = ct.classify_branch(zero_share=0.75, adi=3.0, dow_season=0.3, thr=thr)
+    branch = ct.classify_branch(zero_share=0.75, adi=3.0, thr=thr)
     assert branch == "B1_tweedie"
 
 
 def test_dense_is_standard(thr):
-    branch, _ = ct.classify_branch(zero_share=0.30, adi=1.5, dow_season=0.3, thr=thr)
+    branch = ct.classify_branch(zero_share=0.30, adi=1.5, thr=thr)
     assert branch == "standard"
 
 
@@ -66,7 +68,7 @@ def test_b1_cut_means_high_not_median(thr):
     non_sparse = pool[pool["adi"] < thr.adi_sparse_cut]
     median_zero = float(non_sparse["zero_share"].median())
     assert median_zero < thr.zero_share_tweedie_cut  # median is below the cut
-    assert ct.classify_branch(median_zero, adi=3.0, dow_season=0.0, thr=thr)[0] == "standard"
+    assert ct.classify_branch(median_zero, adi=3.0, thr=thr) == "standard"
     frac_tweedie = float((non_sparse["zero_share"] >= thr.zero_share_tweedie_cut).mean())
     assert frac_tweedie <= 0.45  # a minority ("high"), not ~half (which P50 gives)
 
@@ -96,27 +98,33 @@ def test_b1_cut_calibrated_on_nonsparse_not_full_pool():
 
 
 def test_nan_adi_is_sparse(thr):
-    branch, _ = ct.classify_branch(zero_share=0.5, adi=float("nan"), dow_season=0.3, thr=thr)
+    branch = ct.classify_branch(zero_share=0.5, adi=float("nan"), thr=thr)
     assert branch == "B2_baseline"
 
 
-def test_seasonal_flag_orthogonal(thr):
-    _, seasonal_hi = ct.classify_branch(0.75, 3.0, thr.dow_season_cut + 0.05, thr)
-    _, seasonal_lo = ct.classify_branch(0.75, 3.0, thr.dow_season_cut - 0.05, thr)
-    assert seasonal_hi is True and seasonal_lo is False
+def test_no_seasonal_gate(thr):
+    """B3 was dropped (master plan sec 3): the router must not expose a seasonal gate.
+
+    Pins the deletion so the dead branch cannot be reintroduced by accident. The
+    branch is a plain string of zero_share/adi only -- calendar features go to
+    every series unconditionally, on any M5-format dataset, so there is nothing a
+    seasonal flag could switch.
+    """
+    assert isinstance(ct.classify_branch(0.75, 3.0, thr), str)
+    assert not hasattr(thr, "dow_season_cut")
+    assert "dow_season_cut" not in asdict(thr)
 
 
 def test_thresholds_ordered_and_bounded(thr):
     assert 0.0 < thr.zero_share_tweedie_cut < 1.0
     assert thr.adi_sparse_cut > 1.0
-    assert 0.0 < thr.dow_season_cut < 1.0
     assert thr.min_forecast == 0.0
 
 
 def test_branch_coverage_non_degenerate(thr):
     pool = ct.load_nond_pool()
     branches = pool.apply(
-        lambda r: ct.classify_branch(r["zero_share"], r["adi"], r["dow_season"], thr)[0],
+        lambda r: ct.classify_branch(r["zero_share"], r["adi"], thr),
         axis=1,
     )
     counts = branches.value_counts()

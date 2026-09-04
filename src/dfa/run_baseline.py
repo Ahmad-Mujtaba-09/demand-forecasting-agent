@@ -79,8 +79,7 @@ def _load_thresholds() -> Thresholds:
 def _b2_ids(signal_rows: pd.DataFrame, thr: Thresholds) -> set[str]:
     """Series the deterministic branch logic routes to the sparse baseline (B2)."""
     b2 = signal_rows.apply(
-        lambda r: classify_branch(r["zero_share"], r["adi"], r["dow_season"], thr)[0]
-        == "B2_baseline",
+        lambda r: classify_branch(r["zero_share"], r["adi"], thr) == "B2_baseline",
         axis=1,
     )
     return set(signal_rows.loc[b2, "id"])
