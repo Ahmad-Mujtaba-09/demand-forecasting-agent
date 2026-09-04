@@ -2,10 +2,9 @@
   "thresholds": {
     "adi_sparse_cut": 8.77,
     "zero_share_tweedie_cut": 0.663,
-    "dow_season_cut": 0.042,
     "max_median_ratio": 24.0,
     "min_forecast": 0.0,
-    "basis": "data-relative: full pool n=30240, non-sparse n=27217; ADI P90 (full), zero-share P60 (non-sparse), DoW P90 (full), ratio P99 (full). S-B cutoffs absolute (see signals.py)."
+    "basis": "data-relative: full pool n=30240, non-sparse n=27217; ADI P90 (full), zero-share P60 (non-sparse), ratio P99 (full). S-B cutoffs absolute (see signals.py)."
   },
   "branch_counts_non_d": {
     "standard": 16317,
@@ -17,7 +16,6 @@
     "B1_tweedie": 0.36,
     "B2_baseline": 0.1
   },
-  "seasonal_feature_frac": 0.098,
   "distribution_summary_non_d": {
     "zero_share": {
       "p10": 0.258,

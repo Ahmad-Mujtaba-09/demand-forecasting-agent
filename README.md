@@ -122,9 +122,16 @@ untouched until Phase 5.
 | Critic bounds | `≥ 0`, `≤ 24×` median non-zero | Non-negativity (absolute) + P99 tail (data-relative) |
 | SB class cutoffs | `ADI 1.32`, `CV² 0.49` | **Absolute** — Syntetos & Boylan (2005), cited, never tuned |
 
-Resulting branch coverage: **standard 54% · Tweedie 36% · sparse-baseline 10%**. (The
-day-of-week η² cut was calibrated too, but the seasonal branch was dropped — see above —
-so it no longer gates anything.)
+Resulting branch coverage: **standard 54% · Tweedie 36% · sparse-baseline 10%**.
+
+There is deliberately **no day-of-week seasonality cut**. B3 was dropped in Phase 1, and
+because every series now gets the calendar features unconditionally, a per-series seasonal
+gate would have no "off" state to switch to — on *any* M5-format dataset, not just M5. So
+the cut was removed from the router rather than left calibrated-but-unused: `classify_branch`
+takes `(zero_share, adi)` and returns a branch, and nothing in `thresholds.json` governs
+seasonality. The η² **signal** is retained as descriptive EDA — its percentiles ship in
+`distribution_summary_non_d`, which is where an incoming dataset's weekly structure shows up
+for a human to read.
 
 ---
 
